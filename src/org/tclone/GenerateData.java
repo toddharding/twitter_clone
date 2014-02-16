@@ -20,9 +20,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.RandomAccess;
 
-/**
- * Created by Todd on 12/02/14.
- */
 @WebServlet(urlPatterns = {"/gendata"}, name = "GenerateDataServlet")
 public class GenerateData extends HttpServlet
 {
@@ -185,11 +182,8 @@ public class GenerateData extends HttpServlet
 		try (TwitterCloneDB db = new TwitterCloneDB("192.168.2.11"))
 		{
 			Fairy fairy = Fairy.create(Locale.ENGLISH);
-			ArrayList<Tweet> tweets = new ArrayList<>();
 			ArrayList<User> users = new ArrayList<>();
-
 			ResultSet user_results = db.getSession().execute("SELECT * FROM tweetclone.users;");
-
 			for(Row row : user_results)
 			{
 				User u = new User();
@@ -204,9 +198,9 @@ public class GenerateData extends HttpServlet
 				System.out.println("Generating Tweet: " + i);
 				Tweet tweet = new Tweet();
 				User user = users.get(random.nextInt(users.size() -1));
-
 				tweet.id = UUIDs.timeBased();
-				tweet.tweet_contents = fairy.text().randomString(140);
+				tweet.tweet_contents = fairy.text().paragraph();
+				tweet.tweet_contents = tweet.tweet_contents.substring(0, Math.min(tweet.tweet_contents.length(), 140));
 				tweet.userid = user.id;
 				tweet.location = user.country;
 				System.out.println("id: " + tweet.id);
