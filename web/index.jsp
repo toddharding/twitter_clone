@@ -7,17 +7,14 @@
     <link rel="stylesheet" href="css/app.css"/>
 </head>
 <body>
-<ul class="menu" ng-controller="NavBarController">
-    <li ng-repeat="link in nav_links">
-        <a ng-href="{{link.url}}">{{link.name}}</a>
-    </li>
-    <li><a href="#/view1">view1</a></li>
-    <li><a href="#/view2">view2</a></li>
-</ul>
+
+    <nav-links></nav-links>
+
+
 
 <div ng-view></div>
 
-<div>Angular seed app: v<span app-version></span></div>
+
 
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>

@@ -8,4 +8,18 @@ angular.module('tclone.directives', []).
     return function(scope, elm, attrs) {
       elm.text(version);
     };
-  }]);
+  }])
+    .directive('navLinks', function(){
+        return{
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'templates/nav_links.html'
+        };
+    })
+    .directive('loginForm', function(){
+        return{
+            restrict: 'E',
+            transclude: true,
+            templateUrl: 'templates/login_form.html'
+        }
+    });

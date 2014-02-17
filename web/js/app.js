@@ -14,5 +14,6 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: 'MyCtrl2'});
   $routeProvider.when('/about', {templateUrl: 'partials/about.html', controller: 'AboutController'});
   $routeProvider.when('/test', {templateUrl: 'partials/test.html', controller: 'TestController'});
+  $routeProvider.when('/login', {templateUrl: 'partials/login.html', controller: 'LoginController'});
   $routeProvider.otherwise({redirectTo: '/view1'});
 }]);
