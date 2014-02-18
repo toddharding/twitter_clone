@@ -2,12 +2,13 @@ package org.tclone;
 
 import com.datastax.driver.core.Row;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Created by Todd on 14/02/14.
  */
-public class Tweet extends Entity
+public class Tweet extends Entity implements Serializable
 {
 	public UUID id;
 	public UUID userid;

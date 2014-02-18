@@ -12,8 +12,9 @@ import java.io.IOException;
 
 
 /**
- * Servlet implementation class Login
+ * Servlet implementation class LoginServlet
  */
+
 @WebServlet(name = "HomeServlet", urlPatterns = { "/home" })
 public class Home extends HttpServlet {
 	private static final long serialVersionUID = 1L;
