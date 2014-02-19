@@ -8,37 +8,36 @@ import com.datastax.driver.core.Session;
  */
 public class CassandraDatabaseConnection extends DatabaseConnection
 {
-	private Cluster cluster;
-	public Cluster getCluster()
+    private static CassandraDatabaseConnection instance = new CassandraDatabaseConnection();
+	private static Cluster cluster;
+	public static Cluster getCluster()
 	{
 		return cluster;
 	}
 
 	private String node;
-	public CassandraDatabaseConnection(String node)
-	{
-		this.node = node;
-		connect();
-	}
+    private CassandraDatabaseConnection()
+    {
+
+    }
 
 	private Session session;
 	public Session getSession()
 	{
-		return session;
+        return session;
 	}
+
+    public static CassandraDatabaseConnection getInstance()
+    {
+        return instance;
+    }
+
 
 
 	@Override
-	public void close() throws Exception
+	protected void connect(String node)
 	{
-		System.out.println("Closing Connection");
-		disconnect();
-	}
-
-	@Override
-	protected void connect()
-	{
-
+        this.node = node;
 		cluster = Cluster.builder()
 				.addContactPoint(node)
 				.build();
@@ -46,10 +45,13 @@ public class CassandraDatabaseConnection extends DatabaseConnection
 
 	}
 
-	@Override
+
+    @Override
 	protected void disconnect()
 	{
 		session.shutdown();
 		cluster.shutdown();
-	}
+    }
 }
+
+

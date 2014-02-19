@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Todd on 18/02/14.
@@ -42,10 +43,12 @@ public class TweetServlet extends HttpServlet
 		response.setContentType("application/json");
 		String[] args = request.getPathInfo().split("/");
 		System.out.println(args[1]);
-		try(TwitterCloneDB db = new TwitterCloneDB("192.168.2.11"))
+		try
 		{
+            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			Gson gson = new Gson();
 			Tweet tweet = new Tweet();
+            tweet.id = UUID.fromString(args[1]);
 			ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.tweets WHERE id = " + args[1] + " LIMIT 1;");
 			tweet.construct(resultSet.one());
 			System.out.println(gson.toJson(tweet));

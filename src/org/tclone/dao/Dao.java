@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public interface Dao <T extends Serializable>
 {
-	T create (T t);
+	boolean create (T t);
 	T retrieve (T t);
 	T update (T t);
 	void delete (T t);

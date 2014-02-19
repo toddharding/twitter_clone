@@ -8,6 +8,8 @@ import com.datastax.driver.core.utils.UUIDs;
 import org.jfairy.Fairy;
 import org.jfairy.producer.person.Person;
 import org.mindrot.jbcrypt.BCrypt;
+import org.tclone.dao.TweetDao;
+import org.tclone.dao.UserDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -86,8 +88,9 @@ public class GenerateData extends HttpServlet
 
 	public void createSchema()
 	{
-		try (TwitterCloneDB db = new TwitterCloneDB("192.168.2.11"))
+		try
 		{
+            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			if (db.getSession() != null)
 			{
 				db.getSession().execute(dropKeyspace);
@@ -119,8 +122,9 @@ public class GenerateData extends HttpServlet
 		createSchema();
 		generateUsers();
 		generateTweets();
-		try (CassandraDatabaseConnection db = new CassandraDatabaseConnection("192.168.2.11"))
+		try
 		{
+            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			Metadata metadata = db.getCluster().getMetadata();
 			System.out.printf("Connected to cluster: %s\n",
 					metadata.getClusterName());
@@ -137,8 +141,10 @@ public class GenerateData extends HttpServlet
 
 	public void generateUsers()
 	{
-		try (TwitterCloneDB db = new TwitterCloneDB("192.168.2.11"))
+		try
 		{
+            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+            UserDao userDao = new UserDao();
 			Fairy fairy = Fairy.create(Locale.ENGLISH);
 			ArrayList<User> users = new ArrayList<>();
 			String password = BCrypt.hashpw("test", BCrypt.gensalt(12));
@@ -169,7 +175,7 @@ public class GenerateData extends HttpServlet
 					System.out.println("");
 					users.add(user);
 				}
-				while(db.createUser(user) == false && ++failcount < 100);
+				while(userDao.create(user) == false && ++failcount < 100);
 			}
 		} catch (Exception e)
 		{
@@ -179,8 +185,9 @@ public class GenerateData extends HttpServlet
 
 	public void generateTweets()
 	{
-		try (TwitterCloneDB db = new TwitterCloneDB("192.168.2.11"))
+		try
 		{
+            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			Fairy fairy = Fairy.create(Locale.ENGLISH);
 			ArrayList<User> users = new ArrayList<>();
 			ResultSet user_results = db.getSession().execute("SELECT * FROM tweetclone.users;");
@@ -192,6 +199,7 @@ public class GenerateData extends HttpServlet
 			}
 
 			Random random = new Random();
+            TweetDao tweetDao = new TweetDao();
 
 			for (int i = 0; i < numberOfTweetsToGenerate; ++i)
 			{
@@ -208,7 +216,7 @@ public class GenerateData extends HttpServlet
 				System.out.println("username: " + user.username);
 				System.out.println("tweet_contents: " + tweet.tweet_contents);
 				System.out.println("location: " + tweet.location);
-				db.createTweet(tweet);
+				tweetDao.create(tweet);
 			}
 		} catch (Exception e)
 		{
