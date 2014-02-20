@@ -8,7 +8,9 @@ import com.datastax.driver.core.Session;
  */
 public class CassandraDatabaseConnection extends DatabaseConnection
 {
-    private static CassandraDatabaseConnection instance = new CassandraDatabaseConnection();
+
+
+	private static CassandraDatabaseConnection instance = new CassandraDatabaseConnection();
 	private static Cluster cluster;
 	public static Cluster getCluster()
 	{
@@ -35,19 +37,31 @@ public class CassandraDatabaseConnection extends DatabaseConnection
 
 
 	@Override
-	protected void connect(String node)
+	public void connect(String node)
 	{
-        this.node = node;
-		cluster = Cluster.builder()
-				.addContactPoint(node)
-				.build();
+		buildCluster(node);
 		session = cluster.connect();
 
 	}
 
+	private void buildCluster(String node)
+	{
+		this.node = node;
+		cluster = Cluster.builder()
+				.addContactPoint(node)
+				.build();
+	}
+
+	@Override
+	public void connect(String node, String keyspace)
+	{
+		buildCluster(node);
+		session = cluster.connect(keyspace);
+	}
+
 
     @Override
-	protected void disconnect()
+	public void disconnect()
 	{
 		session.shutdown();
 		cluster.shutdown();

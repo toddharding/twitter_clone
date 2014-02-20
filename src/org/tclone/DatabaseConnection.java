@@ -6,7 +6,8 @@ package org.tclone;
 public abstract class DatabaseConnection
 {
 
-	protected abstract void connect(String connectionString);
-	protected abstract void disconnect();
+	public abstract void connect(String connectionString);
+	public abstract void connect(String connectionString, String schema);
+	public abstract void disconnect();
 
 }

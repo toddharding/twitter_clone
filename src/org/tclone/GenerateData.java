@@ -10,6 +10,8 @@ import org.jfairy.producer.person.Person;
 import org.mindrot.jbcrypt.BCrypt;
 import org.tclone.dao.TweetDao;
 import org.tclone.dao.UserDao;
+import org.tclone.entities.Tweet;
+import org.tclone.entities.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,7 +22,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Random;
-import java.util.RandomAccess;
 
 @WebServlet(urlPatterns = {"/gendata"}, name = "GenerateDataServlet")
 public class GenerateData extends HttpServlet

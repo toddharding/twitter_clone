@@ -1,7 +1,11 @@
-package org.tclone;
+package org.tclone.entities;
 
 import com.datastax.driver.core.Row;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -11,10 +15,15 @@ import java.util.UUID;
  */
 public class User extends Entity implements Serializable
 {
+	@NotNull
 	public UUID id;
+	@NotBlank
 	public String username;
+	@NotBlank
 	public String real_name;
+	@Email
 	public String email;
+	@Length(min=6, max=28)
 	public String password;
 	public String language;
 	public String timezone;

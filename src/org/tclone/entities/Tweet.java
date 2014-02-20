@@ -1,4 +1,4 @@
-package org.tclone;
+package org.tclone.entities;
 
 import com.datastax.driver.core.Row;
 
@@ -22,5 +22,8 @@ public class Tweet extends Entity implements Serializable
 		userid = row.getUUID("userid");
 		tweet_contents = row.getString("tweet_contents");
 		location = row.getString("location");
+		System.out.println("id" + id);
+		System.out.println("userid" + userid);
+		System.out.println("conts" + tweet_contents);
 	}
 }

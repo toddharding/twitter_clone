@@ -2,9 +2,7 @@ package org.tclone.dao;
 
 import com.datastax.driver.core.ResultSet;
 import org.tclone.CassandraDatabaseConnection;
-import org.tclone.User;
-
-import java.io.Serializable;
+import org.tclone.entities.User;
 
 /**
  * Created by Todd on 18/02/14.

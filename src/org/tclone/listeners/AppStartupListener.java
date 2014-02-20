@@ -1,6 +1,8 @@
-package org.tclone; /**
+package org.tclone.listeners; /**
  * Created by todd on 19/02/14.
  */
+
+import org.tclone.CassandraDatabaseConnection;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -14,7 +16,8 @@ import javax.servlet.http.HttpSessionBindingEvent;
 public class AppStartupListener implements ServletContextListener,
         HttpSessionListener, HttpSessionAttributeListener {
 
-    String nodeString = "192.168.2.11";
+    public static final String nodeString = "192.168.2.11";
+	public static final String keyspace = "tweetclone";
     // Public constructor is required by servlet spec
     public AppStartupListener() {
     }
@@ -28,6 +31,7 @@ public class AppStartupListener implements ServletContextListener,
          You can initialize servlet context related data here.
       */
         CassandraDatabaseConnection.getInstance().connect(nodeString);
+
     }
 
     public void contextDestroyed(ServletContextEvent sce) {

@@ -1,4 +1,4 @@
-package org.tclone;
+package org.tclone.entities;
 
 import com.datastax.driver.core.Row;
 

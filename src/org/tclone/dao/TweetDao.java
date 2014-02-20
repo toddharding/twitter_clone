@@ -1,9 +1,8 @@
 package org.tclone.dao;
 
+import com.datastax.driver.core.ResultSet;
 import org.tclone.CassandraDatabaseConnection;
-import org.tclone.Tweet;
-
-import java.io.Serializable;
+import org.tclone.entities.Tweet;
 
 /**
  * Created by Todd on 18/02/14.
@@ -32,16 +31,31 @@ public class TweetDao implements Dao<Tweet>
 
     @Override
     public Tweet retrieve(Tweet tweet) {
-        return null;
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.tweets WHERE id = " + tweet.id + " LIMIT 1;");
+		if(resultSet.getAvailableWithoutFetching() == 1)
+		{
+			tweet.construct(resultSet.one());
+		}
+        return tweet;
     }
 
     @Override
     public Tweet update(Tweet tweet) {
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		db.getSession().execute("UPDATE tweetclone.tweets SET " +
+				"tweet_contents='" + tweet.tweet_contents + "' ," +
+				"location='" + tweet.location + "' " +
+				"WHERE id=" +tweet.id.toString() +  " AND userid = " +tweet.userid.toString() +";");
         return null;
     }
 
     @Override
     public void delete(Tweet tweet) {
 
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		db.getSession().execute("DELETE FROM tweetclone.tweets WHERE " +
+				"id =" + tweet.id.toString() + " AND " +
+				"userid = " + tweet.userid.toString() + ";");
     }
 }

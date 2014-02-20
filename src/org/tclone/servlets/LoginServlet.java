@@ -1,4 +1,4 @@
-package org.tclone;
+package org.tclone.servlets;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
