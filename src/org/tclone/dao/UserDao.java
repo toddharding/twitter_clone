@@ -75,16 +75,44 @@ public class UserDao implements Dao<User>
 
     @Override
     public User retrieve(User user) {
-        return null;
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.users WHERE id=" + user.id + " LIMIT 1;" );
+		if(resultSet.getAvailableWithoutFetching() == 1)
+		{
+			user.construct(resultSet.one());
+		}
+        return user;
     }
 
     @Override
     public User update(User user) {
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		db.getSession().execute("UPDATE tweetclone.users SET " +
+				"id=" + user.id + "," +
+				"username='" + user.username + "' ," +
+				"real_name='" + user.real_name + "' ," +
+				"email='" + user.email + "' ," +
+				"password='" + user.password + "' ," +
+				"language='" + user.language + "' ," +
+				"timezone='" + user.timezone + "' ," +
+				"country='" + user.country + "' ," +
+				"followers=" + user.followers + "," +
+				"following=" + user.following + "," +
+				"favorite_tweets=" + user.favorite_tweets + "," +
+				"website='" + user.website + "' ," +
+				"bio='" + user.bio + "' ," +
+				"facebook_link='" + user.facebook_link + "' ," +
+				"tailored_ads='" + user.tailored_ads + "' ," +
+				"api_key='" + user.api_key + " " +
+				"WHERE id=" +user.id + " AND USERNAME=" +  user.username + ";");
         return null;
     }
 
     @Override
     public void delete(User user) {
-
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		db.getSession().execute("DELETE FROM tweetclone.users WHERE " +
+				"id =" + user.id + " AND " +
+				"username = '" + user.username + "';");
     }
 }

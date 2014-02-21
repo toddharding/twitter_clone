@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -28,9 +29,9 @@ public class User extends Entity implements Serializable
 	public String language;
 	public String timezone;
 	public String country;
-	public ArrayList<UUID> followers;
-	public ArrayList<UUID> following;
-	public ArrayList<UUID> favorite_tweets;
+	public Set<UUID> followers;
+	public Set<UUID> following;
+	public Set<UUID> favorite_tweets;
 	public String website;
 	public String bio;
 	public String facebook_link;
@@ -49,9 +50,9 @@ public class User extends Entity implements Serializable
 		language = row.getString("language");
 		timezone = row.getString("timezone");
 		country = row.getString("country");
-		followers = new ArrayList<>(row.getSet("followers", UUID.class));
-		following = new ArrayList<>(row.getSet("following", UUID.class));
-		favorite_tweets = new ArrayList<>(row.getSet("favorite_tweets", UUID.class));
+		followers = row.getSet("followers", UUID.class);
+		following = row.getSet("following", UUID.class);
+		favorite_tweets = row.getSet("favorite_tweets", UUID.class);
 		website = row.getString("website");
 		bio = row.getString("bio");
 		facebook_link = row.getString("facebook_link");

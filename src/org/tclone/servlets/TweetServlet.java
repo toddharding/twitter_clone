@@ -2,8 +2,10 @@ package org.tclone.servlets;
 
 import com.datastax.driver.core.ResultSet;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.dao.TweetDao;
+import org.tclone.dao.UserDao;
 import org.tclone.entities.Tweet;
 
 import javax.servlet.ServletException;
@@ -44,7 +46,11 @@ public class TweetServlet extends HttpServlet
 			Tweet tweet = new Tweet();
 			tweet.id = UUID.fromString(args[1]);
 			//get user id from auth data
+			UserDao userDao = new UserDao();
 			TweetDao tweetDao = new TweetDao();
+			tweetDao.delete(tweet);
+			Gson gson = new Gson();
+			response.getOutputStream().print("{ \"id\":\"" + tweet.id +"\", \"status\":\"deleted\"}");
 		}
 		catch (Exception e)
 		{
