@@ -1,12 +1,14 @@
 package org.tclone.servlets;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.utils.UUIDs;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.dao.TweetDao;
 import org.tclone.dao.UserDao;
 import org.tclone.entities.Tweet;
+import org.tclone.entities.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -26,13 +28,83 @@ public class TweetServlet extends HttpServlet
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 
+        try
+        {
+            response.setContentType("application/json");
+            UserDao userDao = new UserDao();
+            TweetDao tweetDao = new TweetDao();
+            UUID user_id = UUID.fromString(request.getParameter("userid"));
+            User user = userDao.retrieve(user_id);
+            if(user !=null)
+            {
+                Tweet tweet = new Tweet();
+                tweet.id = UUIDs.timeBased();
+                tweet.userid = user.id;
+                tweet.tweet_contents = request.getParameter("tweet_contents");
+                tweet.location = request.getParameter("location");
+
+
+                // TODO AND validate and create tweet
+                if(tweetDao.create(tweet))
+                {
+                    if(tweetDao.retrieve(tweet.id) != null)
+                    {
+                        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                    }
+                    else
+                    {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    }
+                }
+                else
+                {
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getStackTrace());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 	}
 
 	// Update
-	protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
+        try
+        {
+            String[] args = request.getPathInfo().split("/");
+            response.setContentType("application/json");
+            UserDao userDao = new UserDao();
+            TweetDao tweetDao = new TweetDao();
+            //User user = userDao.retrieve(user_id);
+            Tweet tweet = tweetDao.retrieve(UUID.fromString(args[1]));
+            if(tweet != null)
+            {
+                tweet.tweet_contents = request.getParameter("tweet_contents");
+                tweet.location = request.getParameter("location");
+                tweetDao.update(tweet);
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
 
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
 	}
+
 
 	// Delete
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
@@ -42,19 +114,25 @@ public class TweetServlet extends HttpServlet
 		System.out.println(args[1]);
 		try
 		{
-
-			Tweet tweet = new Tweet();
-			tweet.id = UUID.fromString(args[1]);
+            UserDao userDao = new UserDao();
+            TweetDao tweetDao = new TweetDao();
+			Tweet tweet = tweetDao.retrieve(UUID.fromString(args[1]));
 			//get user id from auth data
-			UserDao userDao = new UserDao();
-			TweetDao tweetDao = new TweetDao();
-			tweetDao.delete(tweet);
-			Gson gson = new Gson();
-			response.getOutputStream().print("{ \"id\":\"" + tweet.id +"\", \"status\":\"deleted\"}");
+			if(tweet != null)
+            {
+                tweetDao.delete(tweet);
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+
 		}
 		catch (Exception e)
 		{
 			System.out.println(e.getStackTrace());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -66,20 +144,26 @@ public class TweetServlet extends HttpServlet
 		System.out.println(args[1]);
 		try
 		{
-            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			TweetDao tweetDao = new TweetDao();
 			Gson gson = new Gson();
-			Tweet tweet = new Tweet();
-            tweet.id = UUID.fromString(args[1]);
-			tweet = tweetDao.retrieve(tweet);
-			//ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.tweets WHERE id = " + args[1] + " LIMIT 1;");
-			//tweet.construct(resultSet.one());
-			System.out.println(gson.toJson(tweet));
-			response.getOutputStream().print(gson.toJson(tweet));
+
+            UUID tweet_id = UUID.fromString(args[1]);
+            Tweet tweet = tweetDao.retrieve(tweet_id);
+            if(tweet != null)
+            {
+			    System.out.println(gson.toJson(tweet));
+                response.setStatus(HttpServletResponse.SC_OK);
+			    response.getOutputStream().print(gson.toJson(tweet));
+            }
+            else
+            {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
 		}
 		catch (Exception e)
 		{
 			System.out.println(e.getStackTrace());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

@@ -34,11 +34,11 @@ public class GenerateData extends HttpServlet
 	final String createTweetTable =
 		"CREATE TABLE " + keyspaceName + "." + tweetTableName + " " +
 			"(" +
-			"id timeuuid," +
+			"id timeuuid PRIMARY KEY," +
 			"userid timeuuid," +
 			"tweet_contents text," +
-			"location text," +
-			"PRIMARY KEY (id, userid)" +
+			"location text" +
+			//"PRIMARY KEY (id, userid)" +
 			");";
 
 	final String userTableName = "users";

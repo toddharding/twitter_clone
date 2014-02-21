@@ -1,8 +1,12 @@
 package org.tclone.dao;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.Tweet;
+
+import java.util.UUID;
 
 /**
  * Created by Todd on 18/02/14.
@@ -30,24 +34,35 @@ public class TweetDao implements Dao<Tweet>
     }
 
     @Override
-    public Tweet retrieve(Tweet tweet) {
+    public Tweet retrieve(UUID id) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.tweets WHERE id = " + tweet.id + " LIMIT 1;");
+		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.tweets WHERE id = " + id + " LIMIT 1;");
+
 		if(resultSet.getAvailableWithoutFetching() == 1)
 		{
+            Tweet tweet = new Tweet();
 			tweet.construct(resultSet.one());
+            return tweet;
 		}
-        return tweet;
+        else
+        {
+            return null;
+        }
+
     }
 
     @Override
-    public Tweet update(Tweet tweet) {
+    public void update(Tweet tweet) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		db.getSession().execute("UPDATE tweetclone.tweets SET " +
+        Statement query = QueryBuilder.update("tweetclone", "tweets")
+                .with(QueryBuilder.set("tweet_contents", tweet.tweet_contents))
+                .and(QueryBuilder.set("location", tweet.location))
+                .where(QueryBuilder.eq("id", tweet.id));
+        db.getSession().execute(query);
+		/*db.getSession().execute("UPDATE tweetclone.tweets SET " +
 				"tweet_contents='" + tweet.tweet_contents + "' ," +
 				"location='" + tweet.location + "' " +
-				"WHERE id=" +tweet.id.toString() +  " AND userid = " +tweet.userid.toString() +";");
-        return null;
+				"WHERE id=" +tweet.id +  " AND userid = " +tweet.userid.toString() +";");*/
     }
 
     @Override
@@ -55,7 +70,6 @@ public class TweetDao implements Dao<Tweet>
 
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 		db.getSession().execute("DELETE FROM tweetclone.tweets WHERE " +
-				"id =" + tweet.id.toString() + " AND " +
-				"userid = " + tweet.userid.toString() + ";");
+				"id =" + tweet.id +  ";");
     }
 }

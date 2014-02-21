@@ -4,6 +4,8 @@ import com.datastax.driver.core.ResultSet;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.User;
 
+import java.util.UUID;
+
 /**
  * Created by Todd on 18/02/14.
  */
@@ -74,18 +76,24 @@ public class UserDao implements Dao<User>
     }
 
     @Override
-    public User retrieve(User user) {
+    public User retrieve(UUID id) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.users WHERE id=" + user.id + " LIMIT 1;" );
+		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.users WHERE id=" + id + " LIMIT 1 ALLOW FILTERING;" );
 		if(resultSet.getAvailableWithoutFetching() == 1)
 		{
+            User user = new User();
 			user.construct(resultSet.one());
+            return user;
 		}
-        return user;
+        else
+        {
+            return null;
+        }
+
     }
 
     @Override
-    public User update(User user) {
+    public void update(User user) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 		db.getSession().execute("UPDATE tweetclone.users SET " +
 				"id=" + user.id + "," +
@@ -105,7 +113,6 @@ public class UserDao implements Dao<User>
 				"tailored_ads='" + user.tailored_ads + "' ," +
 				"api_key='" + user.api_key + " " +
 				"WHERE id=" +user.id + " AND USERNAME=" +  user.username + ";");
-        return null;
     }
 
     @Override
