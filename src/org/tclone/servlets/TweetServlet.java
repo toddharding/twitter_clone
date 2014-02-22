@@ -49,7 +49,10 @@ public class TweetServlet extends HttpServlet
                 {
                     if(tweetDao.retrieve(tweet.id) != null)
                     {
-                        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+						Gson gson = new Gson();
+                        response.setStatus(HttpServletResponse.SC_OK);
+						response.getOutputStream().print(gson.toJson(tweet));
+
                     }
                     else
                     {
@@ -69,8 +72,9 @@ public class TweetServlet extends HttpServlet
         }
         catch (Exception e)
         {
-            System.out.println(e.getStackTrace());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            System.out.println(e.getMessage());
+            response.getOutputStream().println(e.getMessage());
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 	}
 
