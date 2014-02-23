@@ -5,6 +5,7 @@ import com.datastax.driver.core.utils.UUIDs;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -21,24 +22,50 @@ public class User extends Entity implements Serializable
 {
 	@NotNull
 	public UUID id;
+
 	@NotBlank
+	@SafeHtml
 	public String username;
+
 	@NotBlank
+	@SafeHtml
 	public String real_name;
+
 	@Email
 	public String email;
+
 	@Length(min=6, max=28)
 	public String password;
+
+	@NotBlank
+	@SafeHtml
 	public String language;
+
+	@NotBlank
+	@SafeHtml
 	public String timezone;
+
+	@NotBlank
+	@SafeHtml
 	public String country;
+
 	public Set<UUID> followers;
 	public Set<UUID> following;
 	public Set<UUID> favorite_tweets;
+
+	@SafeHtml
 	public String website;
+
+	@SafeHtml
 	public String bio;
+
+	@SafeHtml
 	public String facebook_link;
+
+	@NotNull
 	public boolean tailored_ads;
+	
+	@NotNull
 	public UUID api_key;
 
 	public void generateID()

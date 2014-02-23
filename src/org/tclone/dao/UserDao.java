@@ -1,8 +1,12 @@
 package org.tclone.dao;
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.User;
+import org.tclone.listeners.AppStartupListener;
 
 import java.util.UUID;
 
@@ -104,9 +108,9 @@ public class UserDao implements Dao<User>
 				"language='" + user.language + "' ," +
 				"timezone='" + user.timezone + "' ," +
 				"country='" + user.country + "' ," +
-				"followers=" + user.followers + "," +
-				"following=" + user.following + "," +
-				"favorite_tweets=" + user.favorite_tweets + "," +
+				//"followers=" + user.followers + "," +
+				//"following=" + user.following + "," +
+				//"favorite_tweets=" + user.favorite_tweets + "," +
 				"website='" + user.website + "' ," +
 				"bio='" + user.bio + "' ," +
 				"facebook_link='" + user.facebook_link + "' ," +
@@ -118,8 +122,26 @@ public class UserDao implements Dao<User>
     @Override
     public void delete(User user) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		db.getSession().execute("DELETE FROM tweetclone.users WHERE " +
-				"id =" + user.id + " AND " +
-				"username = '" + user.username + "';");
+		BatchStatement batchStatement = new BatchStatement();
+		Statement delUserStatement = QueryBuilder
+				.delete()
+				.from(AppStartupListener.keyspace, "users")
+				.where(QueryBuilder.eq("id", user.id));
+		batchStatement.add(delUserStatement);
+
+		Statement delUsernameStatement = QueryBuilder
+				.delete()
+				.from(AppStartupListener.keyspace, "usernames")
+				.where(QueryBuilder.eq("username", user.username));
+		batchStatement.add(delUsernameStatement);
+
+		Statement delEmailStatement = QueryBuilder
+				.delete()
+				.from(AppStartupListener.keyspace, "emails")
+				.where(QueryBuilder.eq("email", user.email));
+		batchStatement.add(delEmailStatement);
+
+		db.getSession().execute(batchStatement);
+
     }
 }

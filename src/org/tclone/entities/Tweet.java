@@ -1,7 +1,10 @@
 package org.tclone.entities;
 
 import com.datastax.driver.core.Row;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.SafeHtml;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -10,9 +13,17 @@ import java.util.UUID;
  */
 public class Tweet extends Entity implements Serializable
 {
+	@NotNull
 	public UUID id;
+
+	@NotNull
 	public UUID userid;
+
+	@NotBlank
+	@SafeHtml
 	public String tweet_contents;
+
+	@SafeHtml
 	public String location;
 
 	@Override

@@ -70,6 +70,59 @@ public class UserServlet extends HttpServlet
 		}
 	}
 
+
+	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+
+	}
+
+
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+	{
+		try
+		{
+			response.setContentType("application/json");
+			String[] args = request.getPathInfo().split("/");
+			if(args.length == 2)
+			{
+				UUID id = UUID.fromString(args[1]);
+				try
+				{
+					Gson gson = new Gson();
+					User user = null;
+					UserDao userDao = new UserDao();
+
+					user = userDao.retrieve(id);
+
+					if(user != null)
+					{
+						userDao.delete(user);
+						response.setStatus(HttpServletResponse.SC_OK);
+					}
+					else
+					{
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					}
+
+				}
+				catch (Exception e)
+				{
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					System.out.println(e.getMessage());
+				}
+			}
+			else
+			{
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			}
+		}
+		catch (Exception e)
+		{
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			System.out.println(e.getMessage());
+		}
+	}
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
 		try
