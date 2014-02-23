@@ -31,10 +31,11 @@ public class User extends Entity implements Serializable
 	@SafeHtml
 	public String real_name;
 
+	@NotBlank
 	@Email
 	public String email;
 
-	@Length(min=6, max=28)
+	@NotBlank
 	public String password;
 
 	@NotBlank
@@ -64,7 +65,7 @@ public class User extends Entity implements Serializable
 
 	@NotNull
 	public boolean tailored_ads;
-	
+
 	@NotNull
 	public UUID api_key;
 

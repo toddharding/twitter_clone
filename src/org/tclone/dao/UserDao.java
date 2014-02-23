@@ -22,39 +22,9 @@ public class UserDao implements Dao<User>
     public boolean create(User user)
     {
         CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-        try
-        {
-            ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.usernames " +
-                    "WHERE username = '" + user.username + "';");
-
-            if(resultSet.all().size() != 0)
-            {
-                System.out.println("username is not unique: " + user.username);
-                return false;
-            }
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-        try
-        {
-            ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.emails " +
-                    "WHERE email = '" + user.email + "';");
-
-            if(resultSet.all().size() != 0)
-            {
-                System.out.println("email is not unique: " + user.username);
-                return false;
-            }
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-            return false;
-        }
-        try
+		if (!isUsernameUnique(user)) return false;
+		if (!isEmailUnique(user)) return false;
+		try
         {
             db.getSession().execute(insertUserQuery,
                     user.id, user.username, user.bio, user.country, user.email, user.language, user.password, user.real_name,
@@ -79,7 +49,52 @@ public class UserDao implements Dao<User>
 
     }
 
-    @Override
+	public boolean isEmailUnique(User user)
+	{
+
+		try
+        {
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+            ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.emails " +
+                    "WHERE email = '" + user.email + "';");
+
+            if(resultSet.all().size() != 0)
+            {
+                System.out.println("email is not unique: " + user.username);
+				return false;
+            }
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+			return false;
+        }
+		return true;
+	}
+
+	public boolean isUsernameUnique(User user)
+	{
+		try
+		{
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+			ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.usernames " +
+					"WHERE username = '" + user.username + "';");
+
+			if(resultSet.all().size() != 0)
+			{
+				System.out.println("username is not unique: " + user.username);
+				return false;
+			}
+
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
+	@Override
     public User retrieve(UUID id) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 		ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.users WHERE id=" + id + " LIMIT 1 ALLOW FILTERING;" );
@@ -99,24 +114,39 @@ public class UserDao implements Dao<User>
     @Override
     public void update(User user) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		db.getSession().execute("UPDATE tweetclone.users SET " +
-				"id=" + user.id + "," +
-				"username='" + user.username + "' ," +
-				"real_name='" + user.real_name + "' ," +
-				"email='" + user.email + "' ," +
-				"password='" + user.password + "' ," +
-				"language='" + user.language + "' ," +
-				"timezone='" + user.timezone + "' ," +
-				"country='" + user.country + "' ," +
-				//"followers=" + user.followers + "," +
-				//"following=" + user.following + "," +
-				//"favorite_tweets=" + user.favorite_tweets + "," +
-				"website='" + user.website + "' ," +
-				"bio='" + user.bio + "' ," +
-				"facebook_link='" + user.facebook_link + "' ," +
-				"tailored_ads='" + user.tailored_ads + "' ," +
-				"api_key='" + user.api_key + " " +
-				"WHERE id=" +user.id + " AND USERNAME=" +  user.username + ";");
+		if(isEmailUnique(user) == true)
+		{
+			BatchStatement batchStatement = new BatchStatement();
+			UserDao userDao = new UserDao();
+			User oldUser = userDao.retrieve(user.id);
+			Statement delEmailStatement = QueryBuilder
+					.delete()
+					.from(AppStartupListener.keyspace, "emails")
+					.where(QueryBuilder.eq("email", oldUser.email));
+			batchStatement.add(delEmailStatement);
+
+
+			db.getSession().execute("UPDATE tweetclone.users SET " +
+					//"id=" + user.id + "," +
+					//"username='" + user.username + "' ," +
+					"real_name='" + user.real_name + "' ," +
+					"email='" + user.email + "' ," +
+					"password='" + user.password + "' ," +
+					"language='" + user.language + "' ," +
+					"timezone='" + user.timezone + "' ," +
+					"country='" + user.country + "' ," +
+					//"followers=" + user.followers + "," +
+					//"following=" + user.following + "," +
+					//"favorite_tweets=" + user.favorite_tweets + "," +
+					"website='" + user.website + "' ," +
+					"bio='" + user.bio + "' ," +
+					"facebook_link='" + user.facebook_link + "' ," +
+					"tailored_ads=" + user.tailored_ads + " " +
+					//"api_key='" + user.api_key + " " +
+					"WHERE id=" + user.id  + ";");
+			db.getSession().execute(batchStatement);
+		}
+
     }
 
     @Override
