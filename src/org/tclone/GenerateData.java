@@ -45,7 +45,7 @@ public class GenerateData extends HttpServlet
 	final String createUserTable =
 		"CREATE TABLE " + keyspaceName + "." + userTableName + " " +
 			"(" +
-			"id timeuuid," +
+			"id timeuuid PRIMARY KEY," +
 			"username text," +
 			"real_name text," +
 			"email text," +
@@ -60,8 +60,7 @@ public class GenerateData extends HttpServlet
 			"bio text," +
 			"facebook_link text," +
 			"tailored_ads boolean," +
-			"api_key text," +
-			"PRIMARY KEY (id, username)" +
+			"api_key UUID" +
 			");";
 
 	final String createUsernamesTable =
@@ -157,7 +156,8 @@ public class GenerateData extends HttpServlet
 				{
 					System.out.println("Generating user: " + i);
 					Person person = fairy.person();
-					user.id = UUIDs.timeBased();
+					user.generateID();
+					user.generateApiKey();
 					user.username = person.username();
 					user.country = "UK";
 					user.bio = fairy.text().paragraph();
@@ -168,6 +168,7 @@ public class GenerateData extends HttpServlet
 					user.tailored_ads = true;
 					user.website = fairy.company().url();
 					System.out.println("id: " + user.id);
+					System.out.println("api_key: " + user.api_key);
 					System.out.println("user: " + user.username);
 					System.out.println("name: " + user.real_name);
 					System.out.println("email: " + user.email);

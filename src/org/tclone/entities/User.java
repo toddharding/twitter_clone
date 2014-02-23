@@ -1,12 +1,15 @@
 package org.tclone.entities;
 
 import com.datastax.driver.core.Row;
+import com.datastax.driver.core.utils.UUIDs;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -36,9 +39,17 @@ public class User extends Entity implements Serializable
 	public String bio;
 	public String facebook_link;
 	public boolean tailored_ads;
-	public String api_key;
+	public UUID api_key;
 
+	public void generateID()
+	{
+		id = UUIDs.timeBased();
+	}
 
+	public void generateApiKey()
+	{
+		api_key = UUIDs.random();
+	}
 	@Override
 	public void construct(Row row)
 	{
@@ -57,6 +68,6 @@ public class User extends Entity implements Serializable
 		bio = row.getString("bio");
 		facebook_link = row.getString("facebook_link");
 		tailored_ads = row.getBool("tailored_ads");
-		api_key = row.getString("api_key");
+		api_key = row.getUUID("api_key");
 	}
 }
