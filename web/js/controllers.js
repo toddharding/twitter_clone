@@ -2,24 +2,46 @@
 
 /* Controllers */
 
-angular.module('tclone.controllers', []).
-    controller('MyCtrl1', [function () {
+angular.module('tclone.controllers', [])
+    .controller('NavBarController', ['$scope', 'AuthenticationService','Globals', function ($scope, AuthenticationService, Globals) {
+        $scope.authService = AuthenticationService;
+        $scope.globVars = Globals;
+        $scope._user = null;
+        $scope.isUserLoggedIn = false;
+        $scope.$watch('globVars.getUser()', function(user){
+            console.log("Watch User: ", user);
+            $scope._user = user;
+            if($scope._user != null)
+            {
+                $scope.isUserLoggedIn = true
+            }
+            else
+            {
+                $scope.isUserLoggedIn = false;
+            }
+        })
 
-    }])
-    .controller('MyCtrl2', [function () {
-
-    }])
-    .controller('NavBarController', ['$scope', function ($scope) {
         $scope.nav_links = [
             {
-                'name': 'about',
-                'url': '#/about'
+                'name': 'home',
+                'url': '#/app',
+                'conditional': $scope.isUserLoggedIn
+
+
             },
             {
                 'name': 'login',
-                'url': '#/login'
+                'url': '#/login',
+                'conditional': !$scope.isUserLoggedIn
+            },
+            {
+                'name': 'logout',
+                'url': '#/logout',
+                'conditional': $scope.isUserLoggedIn
             }
         ];
+
+
     }])
     .controller('AboutController', ['$scope', function ($scope) {
         $scope.about_message = "Twitter Clone";
@@ -30,21 +52,36 @@ angular.module('tclone.controllers', []).
     .controller('TestController', ['$scope', function ($scope) {
         $scope.test_message = "Test page";
     }])
-    .controller('LoginFormController', ['$scope', '$http', function($scope, $http){
+    .controller('LoginFormController', ['$scope', '$http','AuthenticationService', 'Auth', 'Globals', function($scope, $http, AuthenticationService, Auth, Globals){
         $scope.user = {'username': '', 'password':''};
         $scope.test_message = "on start"
-        $scope.login = function()
-        {
+        $scope.login = function(){
+            Auth.setCredentials($scope.user.username, $scope.user.password);
             $scope.test_message = "wat up";
             $http.post('auth').
-                success(function(){
+                success(function(data){
                     $scope.test_message = "win";
+                    $scope.user.id = data.id;
+                    AuthenticationService.login({username: $scope.user.username, id: $scope.user.id});
+                    Globals.setUser({name: $scope.user.username, id: $scope.user.id});
                 }).
-                error(function(){
-                    $scope.test_message = "fuck";
+                error(function(data){
+                    $scope.test_message = "Incorrect Username or Password";
+                    $scope.user = null;
+                    Auth.clearCredentials();
+                    Globals.setUser(null);
                 });
         };
     }])
-    .controller('AppController', ['$scope', function ($scope) {
+    .controller('LogoutController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', function($scope, $http, $location, AuthenticationService, Auth, Globals) {
+        $scope.logout = function(){
+            AuthenticationService.logout();
+            Auth.clearCredentials();
+            $location.path("/login");
+            Globals.setUser(null);
+        };
+    }])
+    .controller('AppController', ['$scope', 'SessionService', function ($scope, SessionService) {
         $scope.test_message = "App page";
+        $scope.user = SessionService.currentUser;
     }]);

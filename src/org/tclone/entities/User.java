@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.SafeHtml;
+import org.mindrot.jbcrypt.BCrypt;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -77,6 +78,11 @@ public class User extends Entity implements Serializable
 	public void generateApiKey()
 	{
 		api_key = UUIDs.random();
+	}
+
+	public boolean authenticate(String password)
+	{
+		return BCrypt.checkpw(password, this.password);
 	}
 	@Override
 	public void construct(Row row)

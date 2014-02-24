@@ -12,7 +12,7 @@
 
 
 
-<div ng-view></div>
+<div ui-view></div>
 
 
 
@@ -22,6 +22,7 @@
 <script src="lib/underscore.js"></script>
 <script src="lib/underscore.string.js"></script>
 <script src="lib/angular/angular.js"></script>
+<script src="lib/angular/angular-cookies.js"></script>
 <script src="lib/angular-ui-router.js"></script>
 <script src="lib/angular/angular-route.js"></script>
 <script src="js/app.js"></script>
@@ -29,5 +30,6 @@
 <script src="js/controllers.js"></script>
 <script src="js/filters.js"></script>
 <script src="js/directives.js"></script>
+<script src="js/state_provider.js"></script>
 </body>
 </html>

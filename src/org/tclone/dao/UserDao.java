@@ -111,6 +111,29 @@ public class UserDao implements Dao<User>
 
     }
 
+	public User retrieve(String username) {
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		Statement statement = QueryBuilder
+				.select()
+				.all()
+				.from(AppStartupListener.keyspace, "users")
+				.where(QueryBuilder.eq("username", username));
+
+		//ResultSet resultSet = db.getSession().execute("SELECT * FROM tweetclone.users WHERE username=" + username + " ;" );
+		ResultSet resultSet = db.getSession().execute(statement);
+		if(resultSet.getAvailableWithoutFetching() == 1)
+		{
+			User user = new User();
+			user.construct(resultSet.one());
+			return user;
+		}
+		else
+		{
+			return null;
+		}
+
+	}
+
     @Override
     public void update(User user) {
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
