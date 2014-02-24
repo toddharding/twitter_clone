@@ -44,4 +44,7 @@ angular.module('tclone.controllers', []).
                     $scope.test_message = "fuck";
                 });
         };
+    }])
+    .controller('AppController', ['$scope', function ($scope) {
+        $scope.test_message = "App page";
     }]);

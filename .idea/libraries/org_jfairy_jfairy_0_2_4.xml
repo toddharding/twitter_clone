@@ -1,0 +1,22 @@
+<component name="libraryTable">
+  <library name="org.jfairy:jfairy:0.2.4" type="repository">
+    <properties maven-id="org.jfairy:jfairy:0.2.4" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jfairy-0.2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/joda-time-2.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guava-15.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/snakeyaml-1.13.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guice-3.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javax.inject-1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/aopalliance-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-lang3-3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/jfairy-0.2.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/jfairy-0.2.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

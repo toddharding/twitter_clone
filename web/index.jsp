@@ -19,7 +19,10 @@
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
 -->
+<script src="lib/underscore.js"></script>
+<script src="lib/underscore.string.js"></script>
 <script src="lib/angular/angular.js"></script>
+<script src="lib/angular-ui-router.js"></script>
 <script src="lib/angular/angular-route.js"></script>
 <script src="js/app.js"></script>
 <script src="js/services.js"></script>
