@@ -1,9 +1,15 @@
-<div ng-controller="LoginFormController">
-    <h2>Please Login</h2>
-    <form name="LoginForm" class="css-form">
-        Username: <input type="text" name="username" ng-model="user.username" required/>
-        Password: <input type="password" name="password" ng-model="user.password" required/>
-        <button ng-click="login()">login</button>
-    </form>
-    {{test_message}}
+<div class="container">
+    <div ng-controller="LoginFormController">
+
+        <form name="LoginForm" class="form-signin">
+            <h2 class="form-signin-heading">Please Login</h2>
+            Username: <input class="form-control" placeholder="Username" type="text" name="username"
+                             ng-model="user.username" required autofocus/>
+            Password: <input type="password" class="form-control" placeholder="Password" name="password"
+                             ng-model="user.password" required/>
+            <button class="btn btn-lg btn-primary btn-block" ng-click="login()">login</button>
+            {{test_message}}
+        </form>
+
+    </div>
 </div>

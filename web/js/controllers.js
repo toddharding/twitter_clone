@@ -52,7 +52,7 @@ angular.module('tclone.controllers', [])
     .controller('TestController', ['$scope', function ($scope) {
         $scope.test_message = "Test page";
     }])
-    .controller('LoginFormController', ['$scope', '$http','AuthenticationService', 'Auth', 'Globals', function($scope, $http, AuthenticationService, Auth, Globals){
+    .controller('LoginFormController', ['$scope', '$http','AuthenticationService', 'Auth', 'Globals', '$location', function($scope, $http, AuthenticationService, Auth, Globals, $location){
         $scope.user = {'username': '', 'password':''};
         $scope.test_message = "on start"
         $scope.login = function(){
@@ -64,6 +64,7 @@ angular.module('tclone.controllers', [])
                     $scope.user.id = data.id;
                     AuthenticationService.login({username: $scope.user.username, id: $scope.user.id});
                     Globals.setUser({name: $scope.user.username, id: $scope.user.id});
+                    $location.path("/app");
                 }).
                 error(function(data){
                     $scope.test_message = "Incorrect Username or Password";

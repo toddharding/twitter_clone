@@ -4,7 +4,7 @@
 angular.module("tclone").config(function ($stateProvider, $urlRouterProvider){
     'use strict';
 
-    $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('/app');
 
     $stateProvider
         .state('login', {

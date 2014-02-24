@@ -2,9 +2,17 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en" ng-app="tclone">
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>My AngularJS App</title>
-    <link rel="stylesheet" href="css/app.css"/>
+
+    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <%--<link rel="stylesheet" href="css/app.css"/>--%>
+    <%--<link rel="stylesheet" href="css/navbar-static-top.css"/>--%>
+    <link rel="stylesheet" href="css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="css/tclone.css"/>
+    <link rel="stylesheet" href="css/signin.css"/>
+    <link rel="stylesheet" href="css/font-awesome.css"/>
+
 </head>
 <body>
 
@@ -13,6 +21,8 @@
 
 
 <div ui-view></div>
+
+
 
 
 
@@ -25,6 +35,8 @@
 <script src="lib/angular/angular-cookies.js"></script>
 <script src="lib/angular-ui-router.js"></script>
 <script src="lib/angular/angular-route.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="lib/bootstrap.js"></script>
 <script src="js/app.js"></script>
 <script src="js/services.js"></script>
 <script src="js/controllers.js"></script>
