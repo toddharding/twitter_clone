@@ -17,7 +17,7 @@ angular.module('tclone', [
         $routeProvider.otherwise({redirectTo: '/login'});
     }])
 /**
- * Code based on code by http://arthur.gonigberg.com/2013/06/29/angularjs-role-based-auth/
+ * Code based  on code by http://arthur.gonigberg.com/2013/06/29/angularjs-role-based-auth/
  */
     .run(function ($rootScope, $location, AuthenticationService) {
         var routesThatDontRequireAuth = ['/login'];
