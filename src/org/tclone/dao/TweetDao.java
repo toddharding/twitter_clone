@@ -1,11 +1,14 @@
 package org.tclone.dao;
 
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.Tweet;
+import org.tclone.entities.User;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -72,4 +75,25 @@ public class TweetDao implements Dao<Tweet>
 		db.getSession().execute("DELETE FROM tweetclone.tweets WHERE " +
 				"id =" + tweet.id +  ";");
     }
+
+	public ArrayList<Tweet> retrieveAllTweets(String username)
+	{
+		ArrayList<Tweet> tweets = new ArrayList<>();
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		UserDao userDao = new UserDao();
+		User user = userDao.retrieve(username);
+		Statement query = QueryBuilder
+				.select()
+				.all()
+				.from("tweetclone", "tweets")
+				.where(QueryBuilder.eq("userid", user.id));
+		ResultSet resultSet = db.getSession().execute(query);
+		for(Row r : resultSet)
+		{
+			Tweet t = new Tweet();
+			t.construct(r);
+			tweets.add(t);
+		}
+		return tweets;
+	}
 }

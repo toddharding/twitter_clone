@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -167,7 +168,30 @@ public class TweetServlet extends HttpServlet
 		catch (Exception e)
 		{
 			System.out.println(e.getStackTrace());
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
+		try
+		{
+			TweetDao tweetDao = new TweetDao();
+			Gson gson = new Gson();
+
+			String username = args[1];
+			ArrayList<Tweet> tweets = tweetDao.retrieveAllTweets(username);
+			if(tweets.size() > 0)
+			{
+				System.out.println(gson.toJson(tweets));
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.getOutputStream().print(gson.toJson(tweets));
+			}
+			else
+			{
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getStackTrace());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

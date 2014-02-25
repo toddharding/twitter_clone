@@ -229,29 +229,74 @@ public class UserServlet extends HttpServlet
 			String[] args = request.getPathInfo().split("/");
 			if(args.length == 2)
 			{
-				UUID id = UUID.fromString(args[1]);
+				boolean isUUID = false;
+				UUID id = null;
 				try
 				{
-					Gson gson = new Gson();
-					User user = null;
-					UserDao userDao = new UserDao();
-
-					user = userDao.retrieve(id);
-
-					if(user != null)
-					{
-						response.setStatus(HttpServletResponse.SC_OK);
-						response.getOutputStream().print(gson.toJson(user));
-					}
-					else
-					{
-						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-					}
-
+					id = UUID.fromString(args[1]);
+					isUUID = true;
 				}
 				catch (Exception e)
 				{
-					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					isUUID = false;
+				}
+				if(isUUID)
+				{
+					try
+					{
+
+						Gson gson = new Gson();
+						User user = null;
+						UserDao userDao = new UserDao();
+
+						user = userDao.retrieve(id);
+
+						if(user != null)
+						{
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.getOutputStream().print(gson.toJson(user));
+						}
+						else
+						{
+							response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+						}
+
+					}
+					catch (Exception e)
+					{
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					}
+				}
+				else
+				{
+					try
+					{
+
+						Gson gson = new Gson();
+						User user = null;
+						UserDao userDao = new UserDao();
+
+						user = userDao.retrieve(args[1]);
+
+						if(user != null)
+						{
+							user.password = null;
+							user.email = null;
+							user.api_key = null;
+							user.id = null;
+							response.setStatus(HttpServletResponse.SC_OK);
+							response.getOutputStream().print(gson.toJson(user));
+						}
+						else
+						{
+							response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+						}
+
+					}
+					catch (Exception e)
+					{
+						response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					}
 				}
 			}
 			else

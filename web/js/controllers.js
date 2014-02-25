@@ -54,13 +54,13 @@ angular.module('tclone.controllers', [])
     }])
     .controller('LoginFormController', ['$scope', '$http','AuthenticationService', 'Auth', 'Globals', '$location', function($scope, $http, AuthenticationService, Auth, Globals, $location){
         $scope.user = {'username': '', 'password':''};
-        $scope.test_message = "on start"
+        $scope.test_message = ""
         $scope.login = function(){
             Auth.setCredentials($scope.user.username, $scope.user.password);
-            $scope.test_message = "wat up";
+            $scope.test_message = "logging in";
             $http.post('auth').
                 success(function(data){
-                    $scope.test_message = "win";
+                    $scope.test_message = "logged in";
                     $scope.user.id = data.id;
                     AuthenticationService.login({username: $scope.user.username, id: $scope.user.id});
                     Globals.setUser({name: $scope.user.username, id: $scope.user.id});
@@ -85,4 +85,43 @@ angular.module('tclone.controllers', [])
     .controller('AppController', ['$scope', 'SessionService', function ($scope, SessionService) {
         $scope.test_message = "App page";
         $scope.user = SessionService.currentUser;
+    }])
+    .controller('HomeUserDetailsController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', function($scope, $http, $location, AuthenticationService, Auth, Globals) {
+        $scope.user = {};
+        $http.get('/user/' + Globals.getUser().id)
+            .success(function(data){
+                $scope.user = data;
+            })
+            .error(function(){
+                $scope.user = null;
+            });
+    }])
+    .controller('HomeFeedController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', function($scope, $http, $location, AuthenticationService, Auth, Globals) {
+        $scope.tweets = {};
+        $scope.title = "Feed";
+    }])
+    .controller('PublicUserProfileController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', '$stateParams',
+        function($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams) {
+            $scope.selectedUser = {};
+            $http.get('/user/' + $stateParams.username)
+                .success(function(data){
+                    $scope.selectedUser = data;
+                })
+                .error(function(){
+                    $scope.selectedUser = null;
+                });
+        }])
+    .controller('SelectedUserDetailsController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', '$stateParams',
+        function($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams) {
+        $scope.selectedUser = {};
+        $http.get('/user/' + $stateParams.username)
+            .success(function(data){
+                $scope.selectedUser = data;
+            })
+            .error(function(){
+                $scope.selectedUser = null;
+            });
+    }]).controller('SelectedUserTweetsController', ['$scope', '$http', '$location','AuthenticationService', 'Auth', 'Globals', function($scope, $http, $location, AuthenticationService, Auth, Globals) {
+        $scope.tweets = {};
+        $scope.title = "Feed";
     }]);

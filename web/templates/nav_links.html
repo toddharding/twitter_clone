@@ -9,16 +9,19 @@
             </button>
             <a class="navbar-brand" href="#">Tw@'im</a>
         </div>
-        <ul class="nav navbar-nav">
-            <li>
-                <a ng-href="#/app" ng-show="isUserLoggedIn">Home</a>
-            </li>
-            <li>
-                <a ng-href="#/login" ng-show="!isUserLoggedIn">Login</a>
-            </li>
-            <li>
-                <a ng-href="#/logout" ng-show="isUserLoggedIn">Logout</a>
-            </li>
-        </ul>
+        <div class="navbar-collapse collapse">
+
+            <ul class="nav navbar-nav">
+                <li>
+                    <a ng-href="#/app" ng-show="isUserLoggedIn">Home</a>
+                </li>
+                <li>
+                    <a ng-href="#/login" ng-show="!isUserLoggedIn">Login</a>
+                </li>
+                <li>
+                    <a ng-href="#/logout" ng-show="isUserLoggedIn">Logout</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>

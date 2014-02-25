@@ -41,6 +41,8 @@ public class GenerateData extends HttpServlet
 			//"PRIMARY KEY (id, userid)" +
 			");";
 
+	final String createTweetIndex = "CREATE INDEX tweets_userid ON tweetclone.tweets (userid);";
+
 	final String userTableName = "users";
 	final String createUserTable =
 		"CREATE TABLE " + keyspaceName + "." + userTableName + " " +
@@ -99,6 +101,7 @@ public class GenerateData extends HttpServlet
 				db.getSession().execute(dropKeyspace);
 				db.getSession().execute(createKeyspace);
 				db.getSession().execute(createTweetTable);
+				db.getSession().execute(createTweetIndex);
 				db.getSession().execute(createUserTable);
 				db.getSession().execute(createUsernameIndex);
 				db.getSession().execute(createUsernamesTable);

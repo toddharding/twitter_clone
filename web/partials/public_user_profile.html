@@ -1,19 +1,19 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3 ">
-            <div ng-controller="HomeUserDetailsController" class="panel panel-default">
+            <div ng-controller="SelectedUserDetailsController" class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-user"></span> {{user.real_name}}
+                    <span class="glyphicon glyphicon-user"></span> {{selectedUser.real_name}}
                 </div>
                 <div class="panel-body">
-                    <p>@{{user.username}}</p>
+                    <p>@{{selectedUser.username}}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-9">
-            <div ng-controller="HomeFeedController" class="panel panel-default">
+            <div ng-controller="SelectedUserTweetsController" class="panel panel-default">
                 <div class="panel-heading">
-                     {{title}}
+                    Tweets
                 </div>
             </div>
         </div>

@@ -18,6 +18,11 @@ angular.module("tclone").config(function ($stateProvider, $urlRouterProvider){
             templateUrl: 'partials/app.html',
             controller: 'AppController'
         })
+        .state('user', {
+            url: '/user/:username',
+            templateUrl: 'partials/public_user_profile.html',
+            controller: 'PublicUserProfileController'
+        })
 
         .state('about', {
             url: '/about',
