@@ -16,6 +16,9 @@
                     <a ng-href="#/app" ng-show="isUserLoggedIn">Home</a>
                 </li>
                 <li>
+                    <a ng-href="#/user/{{_user.username}}" ng-show="isUserLoggedIn">My Tweets</a>
+                </li>
+                <li>
                     <a ng-href="#/login" ng-show="!isUserLoggedIn">Login</a>
                 </li>
                 <li>

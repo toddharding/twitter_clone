@@ -1,20 +1,26 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3 ">
+        <div class="col-md-4 ">
             <div ng-controller="SelectedUserDetailsController" class="panel panel-default">
                 <div class="panel-heading">
                     <span class="glyphicon glyphicon-user"></span> {{selectedUser.real_name}}
                 </div>
                 <div class="panel-body">
                     <p>@{{selectedUser.username}}</p>
+                    <button class="btn btn-default">Follow</button>
                 </div>
             </div>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-8">
             <div ng-controller="SelectedUserTweetsController" class="panel panel-default">
                 <div class="panel-heading">
                     Tweets
                 </div>
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="tweet in tweets">
+                        {{tweet.tweet_contents}}
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
