@@ -1,14 +1,18 @@
 <div class="container">
-    <div ng-controller="LoginFormController" >
+    <div ng-controller="LoginFormController">
         <form novalidate name="LoginForm" class="form-signin panel panel-default">
-                 <h4 class="form-signin-heading">Sign in</h4>
-            <input class="form-control" placeholder="Username" type="text" name="username"
-                             ng-model="user.username" required autofocus/>
-            <input type="password" class="form-control" placeholder="Password" name="password"
-                             ng-model="user.password" required/>
-            <button class="btn btn-lg btn-primary btn-block" ng-click="login()">Sign in</button>
-            <h4 class="">or</h4>
-            <button class="btn btn-lg btn-warning btn-block" ng-click="signup()">Sign up</button>
+            <h3 class="form-signin-heading text-center">Sign in</h3>
+            <p>
+                <input class="form-control" placeholder="Username" type="text" name="username"
+                       ng-model="user.username" required autofocus/>
+            </p>
+            <p>
+                <input type="password" class="form-control" placeholder="Password" name="password"
+                       ng-model="user.password" required/>
+            </p>
+            <button class="btn btn-lg btn-primary btn-block" ng-click="login()"><i class="fa fa-sign-in fa-lg"></i> Sign in</button>
+            <h4 class="text-center">or</h4>
+            <button class="btn btn-lg btn-warning btn-block" ng-click="signup()"><i class="fa fa-edit fa-lg"></i> Sign up</button>
             {{test_message}}
         </form>
     </div>

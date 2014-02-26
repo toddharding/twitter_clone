@@ -1,30 +1,39 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3 ">
-            <div ng-controller="HomeUserDetailsController" class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-user"></span> {{user.real_name}}
+            <div ng-controller="HomeUserDetailsController">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-user"></span> {{user.real_name}}
+                    </div>
+                    <div class="panel-body">
+                        <p>@{{user.username}}</p>
+                    </div>
                 </div>
-                <div class="panel-body">
-                    <p>@{{user.username}}</p>
-                </div>
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-pencil"></span> Create Tweet
-                </div>
-                <div class="panel-body">
-                    <textarea class="form-control" ng-model="tweet" rows="3" ng-maxlength="140">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="glyphicon glyphicon-pencil"></span> Create Tweet
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            <textarea class="form-control" ng-model="tweet" rows="6" ng-maxlength="140">
+                            </textarea>
+                        </p>
 
-                    </textarea>
-                    <p ng-show="tweet.$error.maxlength" class="help-block">Username is too long.</p>
-                    <button class="btn btn-default" ng-click="submit()">submit</button>
-                    <p>number of chars left: {{140 - tweet.length}}</p>
+                        <p ng-show="tweet.$error.maxlength" class="help-block">Username is too long.</p>
+
+                        <p>
+                            <button class="btn btn-default" ng-click="submit()">submit</button>
+                        </p>
+                        <p>number of chars left: {{140 - tweet.length}}</p>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-9">
             <div ng-controller="HomeFeedController" class="panel panel-default">
                 <div class="panel-heading">
-                     {{title}}
+                    {{title}}
                 </div>
             </div>
         </div>

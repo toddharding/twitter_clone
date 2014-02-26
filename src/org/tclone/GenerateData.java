@@ -12,6 +12,7 @@ import org.tclone.dao.TweetDao;
 import org.tclone.dao.UserDao;
 import org.tclone.entities.Tweet;
 import org.tclone.entities.User;
+import org.tclone.listeners.AppStartupListener;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,26 +20,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Random;
+import java.util.*;
 
 @WebServlet(urlPatterns = {"/gendata"}, name = "GenerateDataServlet")
 public class GenerateData extends HttpServlet
 {
 	private int numberOfUsersToGenerate = 100;
 	private int numberOfTweetsToGenerate = 1000;
+	private int numberOfRelationshipsToGenerate = 10000;
 	final String keyspaceName = "tweetclone";
 
 	final String tweetTableName = "tweets";
 	final String createTweetTable =
-		"CREATE TABLE " + keyspaceName + "." + tweetTableName + " " +
+		"CREATE TABLE " + AppStartupListener.keyspace + "." + tweetTableName + " " +
 			"(" +
 			"id timeuuid PRIMARY KEY," +
 			"userid timeuuid," +
 			"tweet_contents text," +
 			"location text" +
-			//"PRIMARY KEY (id, userid)" +
 			");";
 
 	final String createTweetIndex = "CREATE INDEX tweets_userid ON tweetclone.tweets (userid);";
@@ -53,14 +52,12 @@ public class GenerateData extends HttpServlet
 			"email text," +
 			"password text," +
 			"language text," +
-			"timezone text," +
 			"country text," +
 			"followers set<timeuuid>," +
 			"following set<timeuuid>," +
 			"favorite_tweets set<timeuuid>," +
 			"website text," +
 			"bio text," +
-			"facebook_link text," +
 			"tailored_ads boolean," +
 			"api_key UUID" +
 			");";
@@ -128,6 +125,7 @@ public class GenerateData extends HttpServlet
 		}
 		createSchema();
 		generateUsers();
+		generateRelationships();
 		generateTweets();
 		try
 		{
@@ -189,6 +187,45 @@ public class GenerateData extends HttpServlet
 		} catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+
+	public void generateRelationships()
+	{
+		try
+		{
+			UserDao userDao = new UserDao();
+			ArrayList<User> users = userDao.getAllUsers();
+			Random random = new Random();
+
+			for(int i = 0; i < numberOfRelationshipsToGenerate; ++i)
+			{
+				int follower_index;
+				int following_index;
+				int counter = 0;
+				do
+				{
+					follower_index = random.nextInt(users.size() - 1);
+					following_index = random.nextInt(users.size() - 1);
+					counter++;
+				}while (follower_index == following_index && counter < 10);
+
+
+				try
+				{
+					userDao.follow(users.get(follower_index), users.get(following_index));
+				}
+				catch (Exception e)
+				{
+					System.out.println(e.getMessage());
+				}
+
+
+			}
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.getMessage());
 		}
 	}
 
