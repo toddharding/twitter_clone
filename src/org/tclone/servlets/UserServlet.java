@@ -52,16 +52,35 @@ public class UserServlet extends HttpServlet
 				user.email = request.getParameter("email");
 				user.password = BCrypt.hashpw(request.getParameter("password"), BCrypt.gensalt(12));
 				user.language = request.getParameter("language");
-				user.timezone = request.getParameter("timezone");
 				user.country = request.getParameter("country");
 				user.website = request.getParameter("website");
 				user.bio = request.getParameter("bio");
-				user.facebook_link = request.getParameter("facebook_link");
 				user.tailored_ads = Boolean.parseBoolean(request.getParameter("tailored_ads"));
 				user.generateApiKey();
 
+				Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
 				UserDao userDao = new UserDao();
+				boolean isEmailUnique = userDao.isEmailUnique(user);
+				JsonObject errors = new JsonObject();
+				JsonObject userJson = new JsonObject();
+				if(constraintViolations.size() > 0 || isEmailUnique == false)
+				{
 
+					if(isEmailUnique == false)
+					{
+						errors.addProperty("email", "email is not unique");
+					}
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+					for(ConstraintViolation<User> c : constraintViolations)
+					{
+						errors.addProperty(c.getPropertyPath().toString(), c.getMessage());
+					}
+					JsonObject responseJson = new JsonObject();
+					responseJson.add("validation_errors", errors);
+					response.getOutputStream().print(responseJson.toString());
+				}
+				else
 				if(userDao.create(user))
 				{
 					response.setStatus(HttpServletResponse.SC_OK);
@@ -115,11 +134,9 @@ public class UserServlet extends HttpServlet
 						user.email = request.getParameter("email");
 						user.password = BCrypt.hashpw(request.getParameter("password"), BCrypt.gensalt(12));
 						user.language = request.getParameter("language");
-						user.timezone = request.getParameter("timezone");
 						user.country = request.getParameter("country");
 						user.website = request.getParameter("website");
 						user.bio = request.getParameter("bio");
-						user.facebook_link = request.getParameter("facebook_link");
 						user.tailored_ads = Boolean.parseBoolean(request.getParameter("tailored_ads"));
 
 						Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);

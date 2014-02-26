@@ -16,8 +16,8 @@ import java.util.UUID;
 public class UserDao implements Dao<User>
 {
     public static final String insertUserQuery = "INSERT INTO tweetclone.users " +
-            "(id, username, bio, country, email, language, password, real_name, tailored_ads, website, api_key, timezone) " +
-            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(id, username, bio, country, email, language, password, real_name, tailored_ads, website, api_key) " +
+            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     @Override
     public boolean create(User user)
     {
@@ -28,7 +28,7 @@ public class UserDao implements Dao<User>
         {
             db.getSession().execute(insertUserQuery,
                     user.id, user.username, user.bio, user.country, user.email, user.language, user.password, user.real_name,
-                    user.tailored_ads, user.website, user.api_key, user.timezone
+                    user.tailored_ads, user.website, user.api_key
             );
             db.getSession().execute("INSERT INTO tweetclone.usernames " +
                     "(username)" +
@@ -156,14 +156,12 @@ public class UserDao implements Dao<User>
 					"email='" + user.email + "' ," +
 					"password='" + user.password + "' ," +
 					"language='" + user.language + "' ," +
-					"timezone='" + user.timezone + "' ," +
 					"country='" + user.country + "' ," +
 					//"followers=" + user.followers + "," +
 					//"following=" + user.following + "," +
 					//"favorite_tweets=" + user.favorite_tweets + "," +
 					"website='" + user.website + "' ," +
 					"bio='" + user.bio + "' ," +
-					"facebook_link='" + user.facebook_link + "' ," +
 					"tailored_ads=" + user.tailored_ads + " " +
 					//"api_key='" + user.api_key + " " +
 					"WHERE id=" + user.id  + ";");

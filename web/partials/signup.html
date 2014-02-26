@@ -19,7 +19,13 @@
                ng-model="password" required/>
         </p>
         <p>
+            Country
             <select ng-model="country" ng-options="c.name for c in countries" class="form-control" required>
+            </select>
+        </p>
+        <p>
+            Language
+            <select ng-model="language" ng-options="l.name for l in languages" class="form-control" required>
             </select>
         </p>
         <p>

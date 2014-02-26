@@ -45,10 +45,6 @@ public class User extends Entity implements Serializable
 
 	@NotBlank
 	@SafeHtml
-	public String timezone;
-
-	@NotBlank
-	@SafeHtml
 	public String country;
 
 	public Set<UUID> followers;
@@ -60,9 +56,6 @@ public class User extends Entity implements Serializable
 
 	@SafeHtml
 	public String bio;
-
-	@SafeHtml
-	public String facebook_link;
 
 	@NotNull
 	public boolean tailored_ads;
@@ -93,14 +86,12 @@ public class User extends Entity implements Serializable
 		email = row.getString("email");
 		password = row.getString("password");
 		language = row.getString("language");
-		timezone = row.getString("timezone");
 		country = row.getString("country");
 		followers = row.getSet("followers", UUID.class);
 		following = row.getSet("following", UUID.class);
 		favorite_tweets = row.getSet("favorite_tweets", UUID.class);
 		website = row.getString("website");
 		bio = row.getString("bio");
-		facebook_link = row.getString("facebook_link");
 		tailored_ads = row.getBool("tailored_ads");
 		api_key = row.getUUID("api_key");
 	}
