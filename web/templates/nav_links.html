@@ -7,22 +7,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Tw@'im</a>
+            <a class="navbar-brand" href="#">Twitter Clone</a>
         </div>
         <div class="navbar-collapse collapse">
 
             <ul class="nav navbar-nav">
                 <li>
-                    <a ng-href="#/app" ng-show="isUserLoggedIn">Home</a>
+                    <a ng-href="#/app" ng-show="isUserLoggedIn"><span class="fa fa-home fa-fw"></span> Home</a>
                 </li>
                 <li>
-                    <a ng-href="#/user/{{_user.username}}" ng-show="isUserLoggedIn">My Tweets</a>
+                    <a ng-href="#/user/{{_user.username}}" ng-show="isUserLoggedIn"><span class="fa fa-twitter fa-fw"></span> My Tweets</a>
                 </li>
                 <li>
-                    <a ng-href="#/login" ng-show="!isUserLoggedIn">Login</a>
+                    <a ng-href="#/login" ng-show="!isUserLoggedIn"><span class="fa fa-sign-in fa-fw"></span> Sign in</a>
                 </li>
                 <li>
-                    <a ng-href="#/logout" ng-show="isUserLoggedIn">Logout</a>
+                    <a ng-href="#/signup" ng-show="!isUserLoggedIn"><span class="fa fa-edit fa-fw"></span> Sign up</a>
+                </li>
+                <li>
+                    <a ng-href="#/logout" ng-show="isUserLoggedIn"><span class="fa fa-sign-out fa-fw"></span> Sign out</a>
                 </li>
             </ul>
         </div>

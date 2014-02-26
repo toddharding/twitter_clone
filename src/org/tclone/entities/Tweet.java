@@ -26,6 +26,8 @@ public class Tweet extends Entity implements Serializable
 	@SafeHtml
 	public String location;
 
+	// generated
+	public String username;
 	@Override
 	public void construct(Row row)
 	{

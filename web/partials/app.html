@@ -12,11 +12,12 @@
                     <span class="glyphicon glyphicon-pencil"></span> Create Tweet
                 </div>
                 <div class="panel-body">
-                    <textarea class="form-control" ng-model="tweet" rows="3" ng-maxlength="3">
+                    <textarea class="form-control" ng-model="tweet" rows="3" ng-maxlength="140">
 
                     </textarea>
                     <p ng-show="tweet.$error.maxlength" class="help-block">Username is too long.</p>
-                    <button class="btn btn-default">submit</button>
+                    <button class="btn btn-default" ng-click="submit()">submit</button>
+                    <p>number of chars left: {{140 - tweet.length}}</p>
                 </div>
             </div>
         </div>

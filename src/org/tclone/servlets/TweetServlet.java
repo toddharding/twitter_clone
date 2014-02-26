@@ -4,6 +4,7 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.utils.UUIDs;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.dao.TweetDao;
 import org.tclone.dao.UserDao;
@@ -156,6 +157,9 @@ public class TweetServlet extends HttpServlet
             Tweet tweet = tweetDao.retrieve(tweet_id);
             if(tweet != null)
             {
+				UserDao userDao = new UserDao();
+				User user = userDao.retrieve(tweet.userid);
+				tweet.username = user.username;
 			    System.out.println(gson.toJson(tweet));
                 response.setStatus(HttpServletResponse.SC_OK);
 			    response.getOutputStream().print(gson.toJson(tweet));
@@ -177,6 +181,10 @@ public class TweetServlet extends HttpServlet
 
 			String username = args[1];
 			ArrayList<Tweet> tweets = tweetDao.retrieveAllTweets(username);
+			for(Tweet t : tweets)
+			{
+				t.username = username;
+			}
 			if(tweets.size() > 0)
 			{
 				System.out.println(gson.toJson(tweets));

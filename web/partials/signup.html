@@ -1,0 +1,40 @@
+<div class="container" ng-controller="SignupController">
+
+    <form novalidate name="SignupForm" class="form-signin panel panel-default">
+        <h4 class="form-signin-heading">Please enter your details</h4>
+        <p>
+            <input type="text" class="form-control" placeholder="Username"  name="username"
+               ng-model="username" required autofocus/>
+        </p>
+        <p>
+            <input type="text" class="form-control" placeholder="Real name"  name="real_name"
+                   ng-model="real_name" required />
+        </p>
+        <p>
+            <input type="email" class="form-control" placeholder="Email" name="email"
+                   ng-model="email" required />
+        </p>
+        <p>
+            <input type="password" class="form-control" placeholder="Password" name="password"
+               ng-model="password" required/>
+        </p>
+        <p>
+            <select ng-model="country" ng-options="c.name for c in countries" class="form-control" required>
+            </select>
+        </p>
+        <p>
+            <input type="url" class="form-control" placeholder="Website"  name="website"
+                   ng-model="website" />
+        </p>
+        <p>
+            <textarea  class="form-control" placeholder="Enter Bio" rows="6"  name="bio"
+                   ng-model="bio" ></textarea>
+        </p>
+        <p>
+            <input type="checkbox"   name="real_name"
+                   ng-model="tailored_ads" required /> Would you like tailored ads?
+        </p>
+        <button class="btn btn-lg btn-warning btn-block" ng-click="signup()">Sign up</button>
+    </form>
+
+</div>

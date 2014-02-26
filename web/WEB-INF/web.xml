@@ -21,4 +21,8 @@
         <servlet-name>TweetServlet</servlet-name>
         <servlet-class>org.tclone.servlets.TweetServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FollowServlet</servlet-name>
+        <servlet-class>org.tclone.servlets.FollowServlet</servlet-class>
+    </servlet>
 </web-app>

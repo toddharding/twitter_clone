@@ -12,6 +12,11 @@ angular.module("tclone").config(function ($stateProvider, $urlRouterProvider){
             templateUrl: 'partials/login.html',
             controller: 'LoginController'
         })
+        .state('signup', {
+            url: '/signup',
+            templateUrl: 'partials/signup.html',
+            controller: 'SignupController'
+        })
 
         .state('app', {
             url: '/app',

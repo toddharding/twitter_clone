@@ -2,7 +2,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en" ng-app="tclone">
 <head>
-    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="utf-8" name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>My AngularJS App</title>
 
     <link rel="stylesheet" href="css/bootstrap.css"/>
@@ -15,17 +16,8 @@
 
 </head>
 <body>
-
-    <nav-links></nav-links>
-
-
-
+<nav-links></nav-links>
 <div ui-view></div>
-
-
-
-
-
 <!-- In production use:
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
 -->
