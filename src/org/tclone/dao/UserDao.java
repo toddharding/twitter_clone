@@ -2,12 +2,16 @@ package org.tclone.dao;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.User;
 import org.tclone.listeners.AppStartupListener;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -48,6 +52,143 @@ public class UserDao implements Dao<User>
         return true;
 
     }
+
+	public void follow(String followerUsername, String followingUsername)
+	{
+		User lv_follower = retrieve(followerUsername);
+		User lv_following = retrieve(followingUsername);
+
+		follow(lv_follower, lv_following);
+	}
+
+	public void follow(UUID followerID, UUID followingID)
+	{
+		User lv_follower = retrieve(followerID);
+		User lv_following = retrieve(followingID);
+
+		follow(lv_follower, lv_following);
+	}
+
+	public void follow(User follower, User following)
+	{
+		if(!follower.id.equals(following.id))
+		{
+			follower.following.add(following.id);
+			following.followers.add(follower.id);
+
+			BatchStatement batchStatement = new BatchStatement();
+			Statement s1 = QueryBuilder
+					.update(AppStartupListener.keyspace, "users")
+					.with(QueryBuilder.add("followers", follower.id))
+					.where(QueryBuilder.eq("id", following.id));
+
+			batchStatement.add(s1);
+
+			Statement s2 = QueryBuilder
+					.update(AppStartupListener.keyspace, "users")
+					.with(QueryBuilder.add("following", following.id))
+					.where(QueryBuilder.eq("id", follower.id));
+			batchStatement.add(s2);
+
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+			db.getSession().execute(batchStatement);
+		}
+	}
+
+	public void unfollow(String followerUsername, String followingUsername)
+	{
+		User lv_follower = retrieve(followerUsername);
+		User lv_following = retrieve(followingUsername);
+
+		follow(lv_follower, lv_following);
+	}
+
+	public void unfollow(UUID followerID, UUID followingID)
+	{
+		User lv_follower = retrieve(followerID);
+		User lv_following = retrieve(followingID);
+
+		follow(lv_follower, lv_following);
+	}
+
+	public void unfollow(User follower, User following)
+	{
+		if(!follower.id.equals(following.id))
+		{
+			follower.following.remove(following.id);
+			following.followers.remove(follower.id);
+
+			BatchStatement batchStatement = new BatchStatement();
+			Statement s1 = QueryBuilder
+					.update(AppStartupListener.keyspace, "users")
+					.with(QueryBuilder.remove("followers", follower.id))
+					.where(QueryBuilder.eq("id", following.id));
+
+			batchStatement.add(s1);
+
+			Statement s2 = QueryBuilder
+					.update(AppStartupListener.keyspace, "users")
+					.with(QueryBuilder.remove("following", following.id))
+					.where(QueryBuilder.eq("id", follower.id));
+			batchStatement.add(s2);
+		}
+	}
+
+	public HashSet<User> getFollowers(User user)
+	{
+		HashSet<User> followers = new HashSet<>();
+
+		BatchStatement batchStatement = new BatchStatement();
+		for(UUID u : user.followers)
+		{
+			Statement getUser = QueryBuilder
+					.select()
+					.all()
+					.from(AppStartupListener.keyspace, "users")
+					.where(QueryBuilder.eq("id", u));
+			batchStatement.add(getUser);
+		}
+
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		ResultSet resultSet = db.getSession().execute(batchStatement);
+
+		for(Row row : resultSet)
+		{
+			User u = new User();
+			u.construct(row);
+			followers.add(u);
+		}
+
+		return followers;
+	}
+
+	public HashSet<User> getFollowing(User user)
+	{
+		HashSet<User> following = new HashSet<>();
+
+		BatchStatement batchStatement = new BatchStatement();
+		for(UUID u : user.following)
+		{
+			Statement getUser = QueryBuilder
+					.select()
+					.all()
+					.from(AppStartupListener.keyspace, "users")
+					.where(QueryBuilder.eq("id", u));
+			batchStatement.add(getUser);
+		}
+
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		ResultSet resultSet = db.getSession().execute(batchStatement);
+
+		for(Row row : resultSet)
+		{
+			User u = new User();
+			u.construct(row);
+			following.add(u);
+		}
+
+		return following;
+	}
 
 	public boolean isEmailUnique(User user)
 	{
@@ -132,6 +273,28 @@ public class UserDao implements Dao<User>
 			return null;
 		}
 
+	}
+
+	public ArrayList<User> getAllUsers()
+	{
+		ArrayList<User> users = new ArrayList<>();
+
+		Statement statement = QueryBuilder
+				.select()
+				.all()
+				.from(AppStartupListener.keyspace, "users");
+
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		ResultSet resultSet = db.getSession().execute(statement);
+
+		for(Row r : resultSet)
+		{
+			User u = new User();
+			u.construct(r);
+			users.add(u);
+		}
+
+		return users;
 	}
 
     @Override
