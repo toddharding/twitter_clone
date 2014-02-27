@@ -316,6 +316,13 @@ public class UserServlet extends HttpServlet
 					}
 				}
 			}
+			else if(args.length == 0)
+			{
+				UserDao userDao = new UserDao();
+				Gson gson = new Gson();
+				response.setStatus(HttpServletResponse.SC_OK);
+				response.getOutputStream().print(gson.toJson(userDao.getAllUsers()));
+			}
 			else
 			{
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

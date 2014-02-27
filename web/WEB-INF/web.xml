@@ -25,4 +25,8 @@
         <servlet-name>FollowServlet</servlet-name>
         <servlet-class>org.tclone.servlets.FollowServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FeedServlet</servlet-name>
+        <servlet-class>org.tclone.servlets.FeedServlet</servlet-class>
+    </servlet>
 </web-app>

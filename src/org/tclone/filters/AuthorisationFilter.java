@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Created by Todd on 18/02/14.
  */
-@WebFilter(urlPatterns = {"/user"}, servletNames = {"UserServlet", "TweetServlet", "FollowServlet"})
+@WebFilter(urlPatterns = {"/user"}, servletNames = {"UserServlet", "TweetServlet", "FollowServlet", "FeedServlet"})
 public class AuthorisationFilter implements Filter
 {
 	public void destroy()

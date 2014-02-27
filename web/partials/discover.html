@@ -1,0 +1,19 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div ng-controller="DiscoverController" class="panel panel-default">
+                <div class="panel-heading">
+                    Users
+                </div>
+                <div class="panel-body">
+                    <ul class="list-group">
+                        <li class="list-group-item" ng-repeat="user in users">
+                            <a ng-href="#/user/{{user.username}}"><h4>{{user.username}}</h4></a>
+                            <p>{{user.bio}}</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

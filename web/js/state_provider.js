@@ -29,6 +29,12 @@ angular.module("tclone").config(function ($stateProvider, $urlRouterProvider){
             controller: 'PublicUserProfileController'
         })
 
+        .state('discover', {
+            url: '/discover',
+            templateUrl: 'partials/discover.html',
+            controller: 'DiscoverController'
+        })
+
         .state('about', {
             url: '/about',
             templateUrl: 'partials/about.html',

@@ -115,4 +115,66 @@ public class TweetDao implements Dao<Tweet>
 		}
 		return tweets;
 	}
+
+	public ArrayList<Tweet> retrieveAllTweetsFromFollowing(UUID id)
+	{
+		UserDao userDao = new UserDao();
+		User user = userDao.retrieve(id);
+		ArrayList<Tweet> tweets = new ArrayList<>();
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		Statement query = QueryBuilder
+				.select()
+				.all()
+				.from(AppStartupListener.keyspace, "tweets")
+				.where(QueryBuilder.in("userid", user.following ));
+		ResultSet resultSet = db.getSession().execute(query);
+		for(Row r : resultSet)
+		{
+			Tweet t = new Tweet();
+			t.construct(r);
+			tweets.add(t);
+		}
+		return tweets;
+	}
+
+
+
+	public ArrayList<Tweet> retrieveAllTweets(UUID id)
+	{
+		ArrayList<Tweet> tweets = new ArrayList<>();
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		Statement query = QueryBuilder
+				.select()
+				.all()
+				.from(AppStartupListener.keyspace, "tweets")
+				.where(QueryBuilder.eq("userid", id));
+		ResultSet resultSet = db.getSession().execute(query);
+		for(Row r : resultSet)
+		{
+			Tweet t = new Tweet();
+			t.construct(r);
+			tweets.add(t);
+		}
+		return tweets;
+	}
+
+	public ArrayList<Tweet> retrieveAllTweets()
+	{
+		ArrayList<Tweet> tweets = new ArrayList<>();
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		Statement query = QueryBuilder
+				.select()
+				.all()
+				.from(AppStartupListener.keyspace, "tweets");
+		ResultSet resultSet = db.getSession().execute(query);
+		for(Row r : resultSet)
+		{
+			Tweet t = new Tweet();
+			t.construct(r);
+			tweets.add(t);
+		}
+		return tweets;
+	}
+
+
 }

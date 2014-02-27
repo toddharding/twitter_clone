@@ -59,6 +59,14 @@
                 <div class="panel-heading">
                     Feed
                 </div>
+                <div class="panel-body">
+                <ul class="list-group">
+                    <li class="list-group-item" ng-repeat="tweet in tweets">
+                        <a ng-href="#/user/{{tweet.username}}"><h4>{{tweet.username}}</h4></a>
+                        <p>{{tweet.tweet_contents}}</p>
+                    </li>
+                </ul>
+            </div>
             </div>
         </div>
     </div>

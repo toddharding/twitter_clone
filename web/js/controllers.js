@@ -616,6 +616,14 @@ angular.module('tclone.controllers', [])
         }])
     .controller('HomeFeedController', ['$scope', '$http', '$location', 'AuthenticationService', 'Auth', 'Globals',
         function ($scope, $http, $location, AuthenticationService, Auth, Globals) {
+            $http.get('/feed/' + Globals.getUser().id)
+                .success(function(data){
+                    console.log("Retrieved Feed Tweets")
+                    $scope.tweets = data;
+                })
+                .error(function(){
+                    console.log("error retrieving feed tweets")
+                });
             $scope.tweets = {};
             $scope.title = "Feed";
         }])
@@ -709,4 +717,17 @@ angular.module('tclone.controllers', [])
                         console.log("error deleting tweet:" + data);
                     });
             }
+        }])
+    .controller('DiscoverController', ['$scope', '$http', '$location', 'AuthenticationService', 'Auth', 'Globals', '$stateParams',
+        function ($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams) {
+            $scope.users = {};
+            $http.get('/user/' )
+                .success(function (data) {
+                    $scope.users = data;
+                    console.log("retrieve all users success");
+                })
+                .error(function () {
+                    console.log("retrieve all users fail");
+                });
+
         }]);
