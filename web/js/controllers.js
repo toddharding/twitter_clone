@@ -574,6 +574,28 @@ angular.module('tclone.controllers', [])
             $http.get('/user/' + Globals.getUser().id)
                 .success(function (data) {
                     $scope.user = data;
+                    $scope.following = new Array();
+                    $scope.followers = new Array();
+                    data.following.forEach(function(id){
+                       $http.get('/user/' + id)
+                           .success(function(data){
+                               $scope.following.push(data);
+                               console.log("Success on get follower: " + data);
+                           })
+                           .error(function(data){
+                               console.log("Error in get follower: " + data);
+                           })
+                    });
+                    data.followers.forEach(function(id){
+                        $http.get('/user/' + id)
+                            .success(function(data){
+                                $scope.followers.push(data);
+                                console.log("Success on get user following: " + data);
+                            })
+                            .error(function(data){
+                                console.log("Error in get user following: " + data);
+                            });
+                    });
                 })
                 .error(function () {
                     $scope.user = null;
@@ -614,6 +636,16 @@ angular.module('tclone.controllers', [])
             $http.get('/user/' + $stateParams.username)
                 .success(function (data) {
                     $scope.selectedUser = data;
+                    console.log("Selected User: " + data.id);
+                    console.log("Global User: " + Globals.getUser().id);
+                    if($.inArray(Globals.getUser().id, data.followers) != -1
+                        || Globals.getUser().id == data.id){
+                        $scope.isFollowing = true;
+                    }
+                    else{
+                        $scope.isFollowing = false;
+                    }
+
                 })
                 .error(function () {
                     $scope.selectedUser = null;

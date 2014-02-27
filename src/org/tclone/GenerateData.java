@@ -1,9 +1,7 @@
 package org.tclone;
 
-import com.datastax.driver.core.Host;
-import com.datastax.driver.core.Metadata;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
+import com.datastax.driver.core.*;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.utils.UUIDs;
 import org.jfairy.Fairy;
 import org.jfairy.producer.person.Person;
@@ -25,8 +23,8 @@ import java.util.*;
 @WebServlet(urlPatterns = {"/gendata"}, name = "GenerateDataServlet")
 public class GenerateData extends HttpServlet
 {
-	private int numberOfUsersToGenerate = 100;
-	private int numberOfTweetsToGenerate = 1000;
+	private int numberOfUsersToGenerate = 1000;
+	private int numberOfTweetsToGenerate = 10000;
 	private int numberOfRelationshipsToGenerate = 10000;
 	final String keyspaceName = "tweetclone";
 
@@ -38,9 +36,9 @@ public class GenerateData extends HttpServlet
 			"userid timeuuid," +
 			"tweet_contents text," +
 			"location text" +
-			");";
+			")";
 
-	final String createTweetIndex = "CREATE INDEX tweets_userid ON tweetclone.tweets (userid);";
+	final String createTweetIndex = "CREATE INDEX ON " + AppStartupListener.keyspace + ".tweets (userid)";
 
 	final String userTableName = "users";
 	final String createUserTable =
@@ -60,28 +58,28 @@ public class GenerateData extends HttpServlet
 			"bio text," +
 			"tailored_ads boolean," +
 			"api_key UUID" +
-			");";
+			")";
 
 
-	final String createUsernameIndex =	"CREATE INDEX users_username ON tweetclone.users (username);";
+	final String createUsernameIndex =	"CREATE INDEX ON tweetclone.users (username)";
 
 	final String createUsernamesTable =
 			"CREATE TABLE " + keyspaceName + "." + "usernames" + " " +
 					"(" +
 					"username text PRIMARY KEY" +
-					");";
+					")";
 
 	final String createEmailsTable =
 			"CREATE TABLE " + keyspaceName + "." + "emails" + " " +
 					"(" +
 					"email text PRIMARY KEY" +
-					");";
+					")";
 
-	final String dropKeyspace = "DROP KEYSPACE IF EXISTS " + keyspaceName + " ;";
+	final String dropKeyspace = "DROP KEYSPACE IF EXISTS " + AppStartupListener.keyspace;
 
-	final String createKeyspace = "CREATE KEYSPACE IF NOT EXISTS " + keyspaceName +
+	final String createKeyspace = "CREATE KEYSPACE " + keyspaceName +
 			" WITH REPLICATION = {'class': 'SimpleStrategy', " +
-			"'replication_factor' : 3};";
+			"'replication_factor' : 2}";
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
@@ -95,14 +93,36 @@ public class GenerateData extends HttpServlet
             CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
 			if (db.getSession() != null)
 			{
-				db.getSession().execute(dropKeyspace);
-				db.getSession().execute(createKeyspace);
-				db.getSession().execute(createTweetTable);
-				db.getSession().execute(createTweetIndex);
-				db.getSession().execute(createUserTable);
-				db.getSession().execute(createUsernameIndex);
-				db.getSession().execute(createUsernamesTable);
-				db.getSession().execute(createEmailsTable);
+				ArrayList<Statement> batchStatement = new ArrayList<>();
+
+				Statement dropKeyspaceStatement = new SimpleStatement(dropKeyspace);
+				batchStatement.add(dropKeyspaceStatement);
+
+				Statement createKeyspaceStatement = new SimpleStatement(createKeyspace);
+				batchStatement.add(createKeyspaceStatement);
+
+				Statement createTweetTableStatement = new SimpleStatement(createTweetTable);
+				batchStatement.add(createTweetTableStatement);
+
+				Statement createUserTableStatement = new SimpleStatement(createUserTable);
+				batchStatement.add(createUserTableStatement);
+
+
+				Statement createUsernamesTableStatement = new SimpleStatement(createUsernamesTable);
+				batchStatement.add(createUsernamesTableStatement);
+
+				Statement createEmailsTableStatement = new SimpleStatement(createEmailsTable);
+				batchStatement.add(createEmailsTableStatement);
+
+
+				for(Statement s : batchStatement)
+				{
+					s.setConsistencyLevel(ConsistencyLevel.ALL);
+					System.out.println("executing statement");
+					db.getSession().execute(s);
+					Thread.sleep(5000);
+				}
+
 			} else
 			{
 				System.out.println("Session is null");
@@ -117,19 +137,39 @@ public class GenerateData extends HttpServlet
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
 	{
-		Fairy fairy = Fairy.create(Locale.forLanguageTag("en"));
-		for (int i = 0; i < 1; i++)
-		{
-			response.getOutputStream().println("Person: " + i + " = " + fairy.person().firstName() + " " + fairy.person().lastName() +
-					" " + fairy.person().username() + " " + fairy.dateProducer().randomDateBetweenYearAndNow(2005));
-		}
 		createSchema();
-		generateUsers();
-		generateRelationships();
-		generateTweets();
 		try
 		{
-            CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+			System.out.println("waiting");
+			Thread.sleep(5000);
+		} catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			ArrayList<Statement> batchStatement = new ArrayList<>();
+			Statement createTweetIndexStatement = new SimpleStatement(createTweetIndex);
+			batchStatement.add(createTweetIndexStatement);
+
+			Statement createUsernameIndexStatement = new SimpleStatement(createUsernameIndex);
+			batchStatement.add(createUsernameIndexStatement);
+
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+
+			for(Statement s : batchStatement)
+			{
+				s.setConsistencyLevel(ConsistencyLevel.ALL);
+				db.getSession().execute(s);
+			}
+
+			generateUsers();
+			generateRelationships();
+			generateTweets();
+
+
+
 			Metadata metadata = db.getCluster().getMetadata();
 			System.out.printf("Connected to cluster: %s\n",
 					metadata.getClusterName());
@@ -140,7 +180,7 @@ public class GenerateData extends HttpServlet
 			}
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			response.getOutputStream().println(e.getMessage());
 		}
 	}
 
@@ -187,6 +227,7 @@ public class GenerateData extends HttpServlet
 		} catch (Exception e)
 		{
 			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -197,9 +238,10 @@ public class GenerateData extends HttpServlet
 			UserDao userDao = new UserDao();
 			ArrayList<User> users = userDao.getAllUsers();
 			Random random = new Random();
-
+			BatchStatement batchStatement = new BatchStatement();
 			for(int i = 0; i < numberOfRelationshipsToGenerate; ++i)
 			{
+				System.out.println("Generating relationship " + i + " of " + numberOfRelationshipsToGenerate);
 				int follower_index;
 				int following_index;
 				int counter = 0;
@@ -209,19 +251,37 @@ public class GenerateData extends HttpServlet
 					following_index = random.nextInt(users.size() - 1);
 					counter++;
 				}while (follower_index == following_index && counter < 10);
-
-
 				try
 				{
-					userDao.follow(users.get(follower_index), users.get(following_index));
+					User follower = users.get(follower_index);
+					User following = users.get(following_index);
+					//userDao.follow(users.get(follower_index), users.get(following_index));
+					if(!follower.id.equals(following.id))
+					{
+						if(!follower.following.contains(following.id) && !following.followers.contains(follower.id))
+						{
+							Statement s1 = QueryBuilder
+									.update(AppStartupListener.keyspace, "users")
+									.with(QueryBuilder.add("followers", follower.id))
+									.where(QueryBuilder.eq("id", following.id));
+
+							batchStatement.add(s1);
+
+							Statement s2 = QueryBuilder
+									.update(AppStartupListener.keyspace, "users")
+									.with(QueryBuilder.add("following", following.id))
+									.where(QueryBuilder.eq("id", follower.id));
+							batchStatement.add(s2);
+						}
+					}
 				}
 				catch (Exception e)
 				{
 					System.out.println(e.getMessage());
 				}
-
-
 			}
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+			db.getSession().execute(batchStatement);
 		}
 		catch (Exception e)
 		{
@@ -246,7 +306,7 @@ public class GenerateData extends HttpServlet
 
 			Random random = new Random();
             TweetDao tweetDao = new TweetDao();
-
+			ArrayList<Tweet> tweets = new ArrayList<>();
 			for (int i = 0; i < numberOfTweetsToGenerate; ++i)
 			{
 				System.out.println("Generating Tweet: " + i);
@@ -262,8 +322,10 @@ public class GenerateData extends HttpServlet
 				System.out.println("username: " + user.username);
 				System.out.println("tweet_contents: " + tweet.tweet_contents);
 				System.out.println("location: " + tweet.location);
-				tweetDao.create(tweet);
+				tweets.add(tweet);
+				//tweetDao.create(tweet);
 			}
+			tweetDao.batchAdd(tweets);
 		} catch (Exception e)
 		{
 			e.printStackTrace();

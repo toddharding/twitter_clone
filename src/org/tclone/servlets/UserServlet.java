@@ -300,7 +300,7 @@ public class UserServlet extends HttpServlet
 							user.password = null;
 							user.email = null;
 							user.api_key = null;
-							user.id = null;
+							//user.id = null;
 							response.setStatus(HttpServletResponse.SC_OK);
 							response.getOutputStream().print(gson.toJson(user));
 						}

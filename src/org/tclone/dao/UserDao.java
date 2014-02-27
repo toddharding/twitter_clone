@@ -73,25 +73,25 @@ public class UserDao implements Dao<User>
 	{
 		if(!follower.id.equals(following.id))
 		{
-			follower.following.add(following.id);
-			following.followers.add(follower.id);
+			if(!follower.following.contains(following.id) && !following.followers.contains(follower.id))
+			{
+				BatchStatement batchStatement = new BatchStatement();
+				Statement s1 = QueryBuilder
+						.update(AppStartupListener.keyspace, "users")
+						.with(QueryBuilder.add("followers", follower.id))
+						.where(QueryBuilder.eq("id", following.id));
 
-			BatchStatement batchStatement = new BatchStatement();
-			Statement s1 = QueryBuilder
-					.update(AppStartupListener.keyspace, "users")
-					.with(QueryBuilder.add("followers", follower.id))
-					.where(QueryBuilder.eq("id", following.id));
+				batchStatement.add(s1);
 
-			batchStatement.add(s1);
+				Statement s2 = QueryBuilder
+						.update(AppStartupListener.keyspace, "users")
+						.with(QueryBuilder.add("following", following.id))
+						.where(QueryBuilder.eq("id", follower.id));
+				batchStatement.add(s2);
 
-			Statement s2 = QueryBuilder
-					.update(AppStartupListener.keyspace, "users")
-					.with(QueryBuilder.add("following", following.id))
-					.where(QueryBuilder.eq("id", follower.id));
-			batchStatement.add(s2);
-
-			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-			db.getSession().execute(batchStatement);
+				CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+				db.getSession().execute(batchStatement);
+			}
 		}
 	}
 
@@ -115,9 +115,6 @@ public class UserDao implements Dao<User>
 	{
 		if(!follower.id.equals(following.id))
 		{
-			follower.following.remove(following.id);
-			following.followers.remove(follower.id);
-
 			BatchStatement batchStatement = new BatchStatement();
 			Statement s1 = QueryBuilder
 					.update(AppStartupListener.keyspace, "users")
@@ -138,7 +135,7 @@ public class UserDao implements Dao<User>
 	{
 		HashSet<User> followers = new HashSet<>();
 
-		BatchStatement batchStatement = new BatchStatement();
+		ArrayList<Statement> statements = new ArrayList<>();
 		for(UUID u : user.followers)
 		{
 			Statement getUser = QueryBuilder
@@ -146,19 +143,20 @@ public class UserDao implements Dao<User>
 					.all()
 					.from(AppStartupListener.keyspace, "users")
 					.where(QueryBuilder.eq("id", u));
-			batchStatement.add(getUser);
+			statements.add(getUser);
 		}
 
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		ResultSet resultSet = db.getSession().execute(batchStatement);
-
-		for(Row row : resultSet)
+		for(Statement s : statements)
 		{
-			User u = new User();
-			u.construct(row);
-			followers.add(u);
+			ResultSet resultSet = db.getSession().execute(s);
+			for(Row row : resultSet)
+			{
+				User u = new User();
+				u.construct(row);
+				followers.add(u);
+			}
 		}
-
 		return followers;
 	}
 
@@ -166,7 +164,7 @@ public class UserDao implements Dao<User>
 	{
 		HashSet<User> following = new HashSet<>();
 
-		BatchStatement batchStatement = new BatchStatement();
+		ArrayList<Statement> statements = new ArrayList<>();
 		for(UUID u : user.following)
 		{
 			Statement getUser = QueryBuilder
@@ -174,17 +172,19 @@ public class UserDao implements Dao<User>
 					.all()
 					.from(AppStartupListener.keyspace, "users")
 					.where(QueryBuilder.eq("id", u));
-			batchStatement.add(getUser);
+			statements.add(getUser);
 		}
 
 		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
-		ResultSet resultSet = db.getSession().execute(batchStatement);
-
-		for(Row row : resultSet)
+		for(Statement s : statements)
 		{
-			User u = new User();
-			u.construct(row);
-			following.add(u);
+			ResultSet resultSet = db.getSession().execute(s);
+			for(Row row : resultSet)
+			{
+				User u = new User();
+				u.construct(row);
+				following.add(u);
+			}
 		}
 
 		return following;

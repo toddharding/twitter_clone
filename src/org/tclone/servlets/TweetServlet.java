@@ -148,6 +148,7 @@ public class TweetServlet extends HttpServlet
 		response.setContentType("application/json");
 		String[] args = request.getPathInfo().split("/");
 		System.out.println(args[1]);
+		boolean fail = false;
 		try
 		{
 			TweetDao tweetDao = new TweetDao();
@@ -171,35 +172,39 @@ public class TweetServlet extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			System.out.println(e.getStackTrace());
+			System.out.println(e.getMessage());
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			fail = true;
 		}
-		try
+		if(fail)
 		{
-			TweetDao tweetDao = new TweetDao();
-			Gson gson = new Gson();
+			try
+			{
+				TweetDao tweetDao = new TweetDao();
+				Gson gson = new Gson();
 
-			String username = args[1];
-			ArrayList<Tweet> tweets = tweetDao.retrieveAllTweets(username);
-			for(Tweet t : tweets)
-			{
-				t.username = username;
+				String username = args[1];
+				ArrayList<Tweet> tweets = tweetDao.retrieveAllTweets(username);
+				for(Tweet t : tweets)
+				{
+					t.username = username;
+				}
+				if(tweets.size() > 0)
+				{
+					System.out.println(gson.toJson(tweets));
+					response.setStatus(HttpServletResponse.SC_OK);
+					response.getOutputStream().print(gson.toJson(tweets));
+				}
+				else
+				{
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				}
 			}
-			if(tweets.size() > 0)
+			catch (Exception e)
 			{
-				System.out.println(gson.toJson(tweets));
-				response.setStatus(HttpServletResponse.SC_OK);
-				response.getOutputStream().print(gson.toJson(tweets));
+				System.out.println(e.getMessage());
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
-			else
-			{
-				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			}
-		}
-		catch (Exception e)
-		{
-			System.out.println(e.getStackTrace());
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 }

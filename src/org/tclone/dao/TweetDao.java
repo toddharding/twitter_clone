@@ -1,5 +1,6 @@
 package org.tclone.dao;
 
+import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Statement;
@@ -7,6 +8,7 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.tclone.CassandraDatabaseConnection;
 import org.tclone.entities.Tweet;
 import org.tclone.entities.User;
+import org.tclone.listeners.AppStartupListener;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -35,6 +37,23 @@ public class TweetDao implements Dao<Tweet>
         }
 
     }
+
+	public void batchAdd(ArrayList<Tweet> tweets)
+	{
+		BatchStatement batchStatement = new BatchStatement();
+		String[] names = {"id", "userid", "tweet_contents", "location"};
+
+		for(Tweet tweet : tweets)
+		{
+			Object[] values = {tweet.id, tweet.userid, tweet.tweet_contents, tweet.location};
+			Statement statement = QueryBuilder
+					.insertInto(AppStartupListener.keyspace, "tweets")
+					.values(names, values );
+			batchStatement.add(statement);
+		}
+		CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+		db.getSession().execute(batchStatement);
+	}
 
     @Override
     public Tweet retrieve(UUID id) {
@@ -85,7 +104,7 @@ public class TweetDao implements Dao<Tweet>
 		Statement query = QueryBuilder
 				.select()
 				.all()
-				.from("tweetclone", "tweets")
+				.from(AppStartupListener.keyspace, "tweets")
 				.where(QueryBuilder.eq("userid", user.id));
 		ResultSet resultSet = db.getSession().execute(query);
 		for(Row r : resultSet)

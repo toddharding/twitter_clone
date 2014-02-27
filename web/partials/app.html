@@ -28,6 +28,30 @@
                         <p>number of chars left: {{140 - tweet.length}}</p>
                     </div>
                 </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-users"></i> Following
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="f in following">
+                                <a ng-href="#/user/{{f.username}}"><h4>{{f.username}}</h4></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i class="fa fa-users"></i> Followers
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-group">
+                            <li class="list-group-item" ng-repeat="f in followers">
+                                <a ng-href="#/user/{{f.username}}"><h4>{{f.username}}</h4></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="col-md-9">
