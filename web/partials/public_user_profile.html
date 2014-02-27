@@ -7,7 +7,8 @@
                 </div>
                 <div class="panel-body">
                     <p>@{{selectedUser.username}}</p>
-                    <button class="btn btn-default" ng-show="!isFollowing">Follow</button>
+                    <button class="btn btn-primary" ng-show="!isFollowing" ng-click="follow()">Follow</button>
+                    <button class="btn btn-danger" ng-show="isFollowing" ng-click="unfollow()">Stop following</button>
                 </div>
             </div>
         </div>
@@ -20,6 +21,7 @@
                     <li class="list-group-item" ng-repeat="tweet in tweets">
                         <a ng-href="#/user/{{tweet.username}}"><h4>{{tweet.username}}</h4></a>
                         <p>{{tweet.tweet_contents}}</p>
+                        <button class="btn btn-primary" ng-show="canDelete" ng-click="deleteTweet(tweet)">Delete</button>
                     </li>
                 </ul>
             </div>

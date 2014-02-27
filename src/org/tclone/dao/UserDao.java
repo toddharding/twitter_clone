@@ -100,7 +100,7 @@ public class UserDao implements Dao<User>
 		User lv_follower = retrieve(followerUsername);
 		User lv_following = retrieve(followingUsername);
 
-		follow(lv_follower, lv_following);
+		unfollow(lv_follower, lv_following);
 	}
 
 	public void unfollow(UUID followerID, UUID followingID)
@@ -108,7 +108,7 @@ public class UserDao implements Dao<User>
 		User lv_follower = retrieve(followerID);
 		User lv_following = retrieve(followingID);
 
-		follow(lv_follower, lv_following);
+		unfollow(lv_follower, lv_following);
 	}
 
 	public void unfollow(User follower, User following)
@@ -128,6 +128,9 @@ public class UserDao implements Dao<User>
 					.with(QueryBuilder.remove("following", following.id))
 					.where(QueryBuilder.eq("id", follower.id));
 			batchStatement.add(s2);
+
+			CassandraDatabaseConnection db = CassandraDatabaseConnection.getInstance();
+			db.getSession().execute(batchStatement);
 		}
 	}
 

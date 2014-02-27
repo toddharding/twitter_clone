@@ -630,12 +630,13 @@ angular.module('tclone.controllers', [])
                     $scope.selectedUser = null;
                 });
         }])
-    .controller('SelectedUserDetailsController', ['$scope', '$http', '$location', 'AuthenticationService', 'Auth', 'Globals', '$stateParams',
-        function ($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams) {
+    .controller('SelectedUserDetailsController', ['$scope', '$http', '$location', 'AuthenticationService', 'Auth', 'Globals', '$stateParams', '$route',
+        function ($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams, $route) {
             $scope.selectedUser = {};
             $http.get('/user/' + $stateParams.username)
                 .success(function (data) {
                     $scope.selectedUser = data;
+                    $scope.sId = data.id;
                     console.log("Selected User: " + data.id);
                     console.log("Global User: " + Globals.getUser().id);
                     if($.inArray(Globals.getUser().id, data.followers) != -1
@@ -650,16 +651,62 @@ angular.module('tclone.controllers', [])
                 .error(function () {
                     $scope.selectedUser = null;
                 });
+            $scope.follow = function(){
+                $http.post('/follow/', {follower_id: Globals.getUser().id, following_id: $scope.selectedUser.id })
+                    .success(function(data){
+                        console.log("succeeded setting follower:" + data);
+                        $scope.isFollowing = true;
+                    })
+                    .error(function(data){
+                        console.log("Error setting follower:" + data);
+                    });
+            };
+            $scope.unfollow = function(){
+                $http({
+                    method:'DELETE',
+                    params: {follower_id: Globals.getUser().id, following_id: $scope.selectedUser.id },
+                    url:'/follow/'
+                })
+                    .success(function(data){
+                        console.log("unfollow succeeded:" + data);
+                        $scope.isFollowing = false;
+                    })
+                    .error(function(data){
+                        console.log("Error unfollowing:" + data);
+                    });
+            };
         }])
     .controller('SelectedUserTweetsController', ['$scope', '$http', '$location', 'AuthenticationService', 'Auth', 'Globals', '$stateParams',
         function ($scope, $http, $location, AuthenticationService, Auth, Globals, $stateParams) {
             $scope.tweets = {};
-            $scope.title = "Feed";
             $http.get('/tweet/' + $stateParams.username)
                 .success(function (data) {
                     $scope.tweets = data;
+                    if(data[0].userid == Globals.getUser().id)
+                    {
+                        $scope.canDelete = true;
+                    }
+                    else
+                    {
+                        $scope.canDelete = false;
+                    }
                 })
                 .error(function () {
                     $scope.tweets = null;
+                    $scope.canDelete = false;
                 });
+            $scope.deleteTweet = function(tweet){
+                $http({
+                    method:'DELETE',
+                    url:'/tweet/' + tweet.id,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+                })
+                    .success(function(data){
+                        console.log("tweet deleted:" + data);
+                        $scope.tweets.splice($.inArray(tweet, $scope.tweets), 1);
+                    })
+                    .error(function(data){
+                        console.log("error deleting tweet:" + data);
+                    });
+            }
         }]);
